@@ -1,6 +1,7 @@
 const CANVAS_FONT = '"Yu Gothic", "Meiryo", "Noto Sans JP", "Segoe UI", sans-serif';
 const DEFAULT_COLORS = ["#0f766e", "#2563eb", "#c2410c", "#7c3aed", "#be123c", "#15803d", "#a16207", "#0369a1"];
 const PLAN_STORAGE_KEY = "timecsv-plan-mode";
+const GUIDE_STORAGE_KEY = "timeseries-guide-seen";
 const FEATURE_FLAGS = {
   barChartRaceFree: true,
   barChartRaceMaxItemsFree: 10,
@@ -773,6 +774,49 @@ const els = {
   diagnosticsPanel: document.querySelector("#diagnosticsPanel"),
   speedRange: document.querySelector("#speedRange"),
   canvas: document.querySelector("#timeSeriesCanvas"),
+  guideOverlay: document.querySelector("#guideOverlay"),
+  guideHighlight: document.querySelector("#guideHighlight"),
+  guideCard: document.querySelector("#guideCard"),
+  guideStepLabel: document.querySelector("#guideStepLabel"),
+  guideText: document.querySelector("#guideText"),
+  guideNextButton: document.querySelector("#guideNextButton"),
+  guideSkipButton: document.querySelector("#guideSkipButton"),
+  guideCloseButton: document.querySelector("#guideCloseButton"),
+};
+
+const guideState = {
+  active: false,
+  index: 0,
+  steps: [
+    {
+      selector: "#csvImportButton",
+      text: "まずはCSVを読み込みます。Excelから書き出したCSVも使えます。",
+    },
+    {
+      selector: "#sampleSelect",
+      text: "手元にCSVがない場合は、ここからサンプルを開けます。",
+    },
+    {
+      selector: ".settings-panel .panel-section",
+      text: "時系列列や表示する系列は、ここで選びます。",
+    },
+    {
+      selector: ".preview-stage",
+      text: "設定を変えると、ここでグラフを確認できます。",
+    },
+    {
+      selector: "#playChartButton",
+      text: "動きを確認したいときは、ここを押します。CSVを開くと使えます。",
+    },
+    {
+      selector: "#savePngTopButton",
+      text: "静止画として資料に使う場合は、PNGで保存できます。CSVを開くと使えます。",
+    },
+    {
+      selector: "#recordChartButton",
+      text: "伸びるグラフ動画にしたい場合は、動画保存を使います。CSVを開くと使えます。",
+    },
+  ],
 };
 
 els.fileInput.addEventListener("change", handleFileLoad);
@@ -955,8 +999,127 @@ els.searchInput.addEventListener("input", () => {
   state.query = els.searchInput.value.trim().toLowerCase();
   renderTable();
 });
+els.guideNextButton?.addEventListener("click", showNextGuideStep);
+els.guideSkipButton?.addEventListener("click", () => finishGuideTour(true));
+els.guideCloseButton?.addEventListener("click", () => finishGuideTour(true));
+document.addEventListener("keydown", (event) => {
+  if (!guideState.active) return;
+  if (event.key === "Escape") finishGuideTour(true);
+  if (event.key === "Enter") showNextGuideStep();
+});
+window.addEventListener("resize", updateGuidePosition);
+document.addEventListener("scroll", updateGuidePosition, true);
 
 render();
+window.setTimeout(startInitialGuideTour, 450);
+
+function startInitialGuideTour() {
+  if (localStorage.getItem(GUIDE_STORAGE_KEY) === "true") return;
+  startGuideTour();
+}
+
+function startGuideTour() {
+  if (!els.guideOverlay || !els.guideHighlight || !els.guideCard) return;
+  guideState.active = true;
+  guideState.index = 0;
+  document.body.classList.add("guide-active");
+  showGuideStep();
+}
+
+function showNextGuideStep() {
+  guideState.index += 1;
+  showGuideStep();
+}
+
+function showGuideStep() {
+  if (!guideState.active) return;
+
+  let target = null;
+  let step = null;
+  while (guideState.index < guideState.steps.length) {
+    step = guideState.steps[guideState.index];
+    target = document.querySelector(step.selector);
+    if (target && isGuideTargetVisible(target)) break;
+    guideState.index += 1;
+  }
+
+  if (!target || !step) {
+    finishGuideTour(true);
+    return;
+  }
+
+  els.guideOverlay.hidden = false;
+  els.guideHighlight.hidden = false;
+  els.guideCard.hidden = false;
+  els.guideStepLabel.textContent = `${guideState.index + 1} / ${guideState.steps.length}`;
+  els.guideText.textContent = step.text;
+  els.guideNextButton.textContent = guideState.index === guideState.steps.length - 1 ? "閉じる" : "次へ";
+  window.requestAnimationFrame(() => updateGuidePosition(target));
+}
+
+function updateGuidePosition(currentTarget = null) {
+  if (!guideState.active || !els.guideCard || els.guideCard.hidden) return;
+  const step = guideState.steps[guideState.index];
+  if (!step) {
+    finishGuideTour(true);
+    return;
+  }
+  const target = currentTarget || document.querySelector(step.selector);
+  if (!target || !isGuideTargetVisible(target)) {
+    showGuideStep();
+    return;
+  }
+
+  const rect = target.getBoundingClientRect();
+  const padding = 8;
+  const highlightLeft = Math.max(8, rect.left - padding);
+  const highlightTop = Math.max(8, rect.top - padding);
+  const highlightWidth = Math.min(window.innerWidth - highlightLeft - 8, rect.width + padding * 2);
+  const highlightHeight = Math.min(window.innerHeight - highlightTop - 8, rect.height + padding * 2);
+
+  Object.assign(els.guideHighlight.style, {
+    left: `${highlightLeft}px`,
+    top: `${highlightTop}px`,
+    width: `${highlightWidth}px`,
+    height: `${highlightHeight}px`,
+  });
+
+  const cardRect = els.guideCard.getBoundingClientRect();
+  const gap = 14;
+  const cardWidth = Math.min(cardRect.width || 320, window.innerWidth - 24);
+  let left = rect.left;
+  let top = rect.bottom + gap;
+
+  if (top + cardRect.height > window.innerHeight - 12) {
+    top = rect.top - cardRect.height - gap;
+  }
+  if (top < 12) {
+    top = Math.min(window.innerHeight - cardRect.height - 12, rect.bottom + gap);
+  }
+  if (left + cardWidth > window.innerWidth - 12) {
+    left = window.innerWidth - cardWidth - 12;
+  }
+
+  Object.assign(els.guideCard.style, {
+    left: `${Math.max(12, left)}px`,
+    top: `${Math.max(12, top)}px`,
+  });
+}
+
+function finishGuideTour(remember) {
+  guideState.active = false;
+  document.body.classList.remove("guide-active");
+  if (els.guideOverlay) els.guideOverlay.hidden = true;
+  if (els.guideHighlight) els.guideHighlight.hidden = true;
+  if (els.guideCard) els.guideCard.hidden = true;
+  if (remember) localStorage.setItem(GUIDE_STORAGE_KEY, "true");
+}
+
+function isGuideTargetVisible(target) {
+  const rect = target.getBoundingClientRect();
+  const style = window.getComputedStyle(target);
+  return rect.width > 0 && rect.height > 0 && style.visibility !== "hidden" && style.display !== "none";
+}
 
 function handleFileLoad(event) {
   const file = event.target.files[0];
@@ -1571,7 +1734,7 @@ function updateButtons() {
   els.exportButton.disabled = !hasData || busy;
   els.addRowButton.disabled = !hasData || busy;
   els.addColumnButton.disabled = !hasData || busy;
-  els.chartModeButton.disabled = !hasData;
+  els.chartModeButton.disabled = busy;
   els.deleteSelectedButton.disabled = !hasData || busy || state.selected.size === 0;
   els.playChartButton.disabled = !hasChart || busy;
   els.recordChartButton.disabled = !hasChart || busy || !canRecordCanvas();

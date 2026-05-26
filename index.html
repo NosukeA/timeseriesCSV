@@ -31,7 +31,7 @@
               <button id="freeModeButton" class="plan-option active" type="button">無料版</button>
               <button id="proModeButton" class="plan-option" type="button">課金版プレビュー</button>
             </div>
-            <label class="button primary main-action">
+            <label id="csvImportButton" class="button primary main-action">
               <input id="fileInput" type="file" accept=".csv,text/csv">
               CSVを読み込む
             </label>
@@ -42,9 +42,20 @@
         </header>
         <div id="planNotice" class="plan-notice">無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。</div>
         <div id="toast" class="toast" hidden></div>
+        <div id="guideOverlay" class="guide-overlay" hidden></div>
+        <div id="guideHighlight" class="guide-highlight" hidden></div>
+        <section id="guideCard" class="guide-card" aria-live="polite" hidden>
+          <button id="guideCloseButton" class="guide-close" type="button" aria-label="ガイドを閉じる">×</button>
+          <span id="guideStepLabel" class="guide-step-label"></span>
+          <p id="guideText"></p>
+          <div class="guide-actions">
+            <button id="guideSkipButton" type="button">スキップ</button>
+            <button id="guideNextButton" class="primary" type="button">次へ</button>
+          </div>
+        </section>
 
         <nav class="mode-tabs" aria-label="表示モード">
-          <button id="chartModeButton" class="active" type="button" disabled>グラフ作成</button>
+          <button id="chartModeButton" class="active" type="button">グラフ作成</button>
           <button id="editModeButton" type="button">データ確認</button>
         </nav>
 
