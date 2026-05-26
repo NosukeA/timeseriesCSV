@@ -8,6 +8,13 @@
   </head>
   <body>
     <main class="app-shell">
+      <aside class="side-ad side-ad-left" aria-label="左広告枠">
+        <div class="ad-card">
+          <span>広告</span>
+          <strong>プロモーション枠</strong>
+          <p>無料版では広告が表示されます。</p>
+        </div>
+      </aside>
       <section class="workspace">
         <header class="topbar">
           <div class="brand">
@@ -60,9 +67,23 @@
                   <option value="countryGdp">国別GDP比較サンプル</option>
                   <option value="stockIndex">株価指数比較サンプル</option>
                   <option value="rankingTrend">ランキング推移サンプル</option>
+                  <option value="raceCountryGdp">BCR: 国別GDPランキング</option>
+                  <option value="racePrefPopulation">BCR: 都道府県人口ランキング</option>
+                  <option value="raceCompanySales">BCR: 企業売上ランキング</option>
+                  <option value="raceSnsFollowers">BCR: SNSフォロワーランキング</option>
+                  <option value="raceYoutubeViews">BCR: YouTube再生数ランキング</option>
+                  <option value="raceProductSales">BCR: 商品別売上ランキング</option>
+                  <option value="raceStoreSales">BCR: 店舗別売上ランキング</option>
                 </select>
               </label>
               <button id="newFileButton" type="button">サンプルを開く</button>
+              <label>
+                <span>グラフモード</span>
+                <select id="graphModeSelect">
+                  <option value="line">折れ線アニメーション</option>
+                  <option value="barRace">バーチャートレース</option>
+                </select>
+              </label>
               <label>
                 <span>時系列列</span>
                 <select id="timeColumnSelect"></select>
@@ -151,7 +172,67 @@
               </label>
             </details>
 
-            <details class="panel-section">
+            <details class="panel-section bar-race-only">
+              <summary>ランキング設定</summary>
+              <label>
+                <span>表示件数 Top N</span>
+                <select id="barTopNSelect">
+                  <option value="5">Top 5</option>
+                  <option value="10">Top 10</option>
+                  <option value="15">Top 15</option>
+                  <option value="20">Top 20</option>
+                </select>
+              </label>
+              <label>
+                <span>並び順</span>
+                <select id="barSortOrderSelect">
+                  <option value="desc">大きい順</option>
+                  <option value="asc">小さい順</option>
+                </select>
+              </label>
+              <label>
+                <span>スケール</span>
+                <select id="barScaleModeSelect">
+                  <option value="global">全期間の最大値で固定</option>
+                  <option value="frame">各時点の最大値に合わせる</option>
+                </select>
+              </label>
+              <label>
+                <span>小数点桁数</span>
+                <select id="barDecimalSelect">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </label>
+              <label>
+                <span>現在年の位置</span>
+                <select id="barYearPositionSelect">
+                  <option value="topRight">右上</option>
+                  <option value="bottomRight">右下</option>
+                  <option value="center">中央薄字</option>
+                  <option value="topLeft">左上</option>
+                </select>
+              </label>
+              <label class="check-row standalone-check">
+                <input id="barShowZeroInput" type="checkbox">
+                <span>0・欠損の系列も表示</span>
+              </label>
+              <label class="check-row standalone-check">
+                <input id="barAllowNegativeInput" type="checkbox">
+                <span>負の値を許可する</span>
+              </label>
+              <label class="check-row standalone-check">
+                <input id="barValueLabelsInput" type="checkbox" checked>
+                <span>値ラベルを表示</span>
+              </label>
+              <label class="check-row standalone-check">
+                <input id="barRankLabelsInput" type="checkbox" checked>
+                <span>順位番号を表示</span>
+              </label>
+            </details>
+
+            <details class="panel-section line-only">
               <summary>軸・スケール</summary>
               <label>
                 <span>Y軸</span>
@@ -292,7 +373,31 @@
           <button id="exportButton" type="button" disabled>CSV保存</button>
         </div>
         <section id="tableHost" class="table-host" hidden aria-live="polite"></section>
+        <footer class="site-footer">
+          <div class="footer-meta">
+            <span>© 2026 NosukeA / TimeCSV Animator. All Rights Reserved.</span>
+            <span>CSVから時系列グラフ動画を作成する資料作成ツール</span>
+          </div>
+          <details class="terms-box">
+            <summary>利用規約</summary>
+            <div class="terms-content">
+              <p>TimeCSV Animatorは、CSVやExcel由来の時系列データからグラフ画像・動画・解説文を作成するためのWebツールです。</p>
+              <p>利用者は、アップロードするCSVデータ、生成した画像・動画・解説文の内容、第三者への共有について自己の責任で管理してください。</p>
+              <p>本アプリはブラウザ上で動作し、現在の試験版では決済・ログイン・クラウド保存を行いません。課金版プレビューは商品化検証用の表示であり、実際の請求は発生しません。</p>
+              <p>無料版では広告表示、出力解像度、透かし、テンプレートなどに制限が入る場合があります。課金版プレビューの機能内容は今後変更される可能性があります。</p>
+              <p>本アプリの利用により生じた損害、データの誤読、出力物の利用結果について、開発者は法令上認められる範囲で責任を負いません。</p>
+              <p>World Bank等の外部データを利用するサンプルについては、各データ提供元の利用条件に従ってください。架空サンプルは説明目的のダミーデータです。</p>
+            </div>
+          </details>
+        </footer>
       </section>
+      <aside class="side-ad side-ad-right" aria-label="右広告枠">
+        <div class="ad-card">
+          <span>広告</span>
+          <strong>おすすめ枠</strong>
+          <p>将来の広告・自社告知をここに表示できます。</p>
+        </div>
+      </aside>
     </main>
 
     <script src="app.js"></script>
