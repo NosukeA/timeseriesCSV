@@ -1,5 +1,8 @@
 const CANVAS_FONT = '"Yu Gothic", "Meiryo", "Noto Sans JP", "Segoe UI", sans-serif';
 const DEFAULT_COLORS = ["#0f766e", "#2563eb", "#c2410c", "#7c3aed", "#be123c", "#15803d", "#a16207", "#0369a1"];
+const PLAN_STORAGE_KEY = "timecsv-plan-mode";
+const FREE_THEME_KEYS = ["presentation", "dark", "newspaper"];
+const PRO_THEME_KEYS = ["youtube", "article", "finance", "classroom", "ir", "verticalSns", "luxury"];
 const THEMES = {
   presentation: {
     appBackground: "#eef1f4",
@@ -57,6 +60,139 @@ const THEMES = {
     inputTextColor: "#1c1917",
     inputBorderColor: "#cfc2ae",
     seriesColors: ["#1e3a8a", "#991b1b", "#166534", "#b45309", "#334155", "#7c2d12"],
+  },
+  youtube: {
+    appBackground: "#101010",
+    panelBackground: "#171717",
+    cardBackground: "#202020",
+    chartBackground: "#0f1115",
+    textColor: "#ffffff",
+    mutedTextColor: "#c7c7c7",
+    borderColor: "#333333",
+    gridColor: "#30343b",
+    axisColor: "#6b7280",
+    buttonPrimaryBackground: "#ef4444",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#262626",
+    buttonSecondaryText: "#ffffff",
+    inputBackground: "#121212",
+    inputTextColor: "#ffffff",
+    inputBorderColor: "#3f3f46",
+    seriesColors: ["#ef4444", "#38bdf8", "#facc15", "#22c55e", "#f472b6", "#a78bfa"],
+  },
+  article: {
+    appBackground: "#ece7dc",
+    panelBackground: "#f7f2e8",
+    cardBackground: "#fffaf0",
+    chartBackground: "#fffdf7",
+    textColor: "#1f2933",
+    mutedTextColor: "#6b6258",
+    borderColor: "#cfc5b4",
+    gridColor: "#ddd3c2",
+    axisColor: "#988d7f",
+    buttonPrimaryBackground: "#111827",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#fffdf7",
+    buttonSecondaryText: "#1f2933",
+    inputBackground: "#fffdf7",
+    inputTextColor: "#1f2933",
+    inputBorderColor: "#cfc5b4",
+    seriesColors: ["#111827", "#b91c1c", "#1d4ed8", "#047857", "#b45309", "#6d28d9"],
+  },
+  finance: {
+    appBackground: "#e9eef3",
+    panelBackground: "#f7fafc",
+    cardBackground: "#ffffff",
+    chartBackground: "#ffffff",
+    textColor: "#111827",
+    mutedTextColor: "#526173",
+    borderColor: "#cbd5e1",
+    gridColor: "#dbe4ee",
+    axisColor: "#94a3b8",
+    buttonPrimaryBackground: "#0f3d5e",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#ffffff",
+    buttonSecondaryText: "#0f172a",
+    inputBackground: "#ffffff",
+    inputTextColor: "#111827",
+    inputBorderColor: "#cbd5e1",
+    seriesColors: ["#0f3d5e", "#b91c1c", "#047857", "#b45309", "#4338ca", "#64748b"],
+  },
+  classroom: {
+    appBackground: "#eef6ff",
+    panelBackground: "#f8fbff",
+    cardBackground: "#ffffff",
+    chartBackground: "#ffffff",
+    textColor: "#18212f",
+    mutedTextColor: "#617187",
+    borderColor: "#c9d8eb",
+    gridColor: "#dbeafe",
+    axisColor: "#93a9c5",
+    buttonPrimaryBackground: "#2563eb",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#ffffff",
+    buttonSecondaryText: "#18212f",
+    inputBackground: "#ffffff",
+    inputTextColor: "#18212f",
+    inputBorderColor: "#c9d8eb",
+    seriesColors: ["#2563eb", "#f97316", "#16a34a", "#dc2626", "#7c3aed", "#0891b2"],
+  },
+  ir: {
+    appBackground: "#edf0f4",
+    panelBackground: "#f9fafb",
+    cardBackground: "#ffffff",
+    chartBackground: "#ffffff",
+    textColor: "#111827",
+    mutedTextColor: "#5b6675",
+    borderColor: "#d1d9e3",
+    gridColor: "#e5eaf0",
+    axisColor: "#98a2b3",
+    buttonPrimaryBackground: "#0b5a5a",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#ffffff",
+    buttonSecondaryText: "#111827",
+    inputBackground: "#ffffff",
+    inputTextColor: "#111827",
+    inputBorderColor: "#d1d9e3",
+    seriesColors: ["#0b5a5a", "#334155", "#0f766e", "#b45309", "#2563eb", "#be123c"],
+  },
+  verticalSns: {
+    appBackground: "#160f24",
+    panelBackground: "#21172f",
+    cardBackground: "#2b1f3d",
+    chartBackground: "#17111f",
+    textColor: "#fff7ed",
+    mutedTextColor: "#d6c6e6",
+    borderColor: "#4c3a64",
+    gridColor: "#3b2f4f",
+    axisColor: "#8b78a8",
+    buttonPrimaryBackground: "#f97316",
+    buttonPrimaryText: "#1f1308",
+    buttonSecondaryBackground: "#312343",
+    buttonSecondaryText: "#fff7ed",
+    inputBackground: "#17111f",
+    inputTextColor: "#fff7ed",
+    inputBorderColor: "#4c3a64",
+    seriesColors: ["#f97316", "#22d3ee", "#e879f9", "#a3e635", "#fb7185", "#facc15"],
+  },
+  luxury: {
+    appBackground: "#11100e",
+    panelBackground: "#181613",
+    cardBackground: "#211f1b",
+    chartBackground: "#181613",
+    textColor: "#f7f3ea",
+    mutedTextColor: "#c8bda9",
+    borderColor: "#4d4233",
+    gridColor: "#3d352b",
+    axisColor: "#9b8d78",
+    buttonPrimaryBackground: "#b08d57",
+    buttonPrimaryText: "#18120a",
+    buttonSecondaryBackground: "#2a251e",
+    buttonSecondaryText: "#f7f3ea",
+    inputBackground: "#211f1b",
+    inputTextColor: "#f7f3ea",
+    inputBorderColor: "#4d4233",
+    seriesColors: ["#9a6b24", "#1f2937", "#7f1d1d", "#14532d", "#312e81", "#854d0e"],
   },
 };
 
@@ -241,9 +377,133 @@ const SAMPLE_DATASETS = {
       ["2024", "0.1", "2.8", "5.0"],
     ],
   },
+  companySales: {
+    fileName: "sample-company-sales.csv",
+    title: "会社売上の推移",
+    subtitle: "事業別の売上成長サンプル",
+    unit: "百万円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "国内事業", "海外事業", "新規事業"],
+      ["2018", "820", "240", "30"],
+      ["2019", "910", "310", "55"],
+      ["2020", "870", "380", "96"],
+      ["2021", "980", "520", "150"],
+      ["2022", "1160", "760", "230"],
+      ["2023", "1320", "980", "360"],
+      ["2024", "1510", "1240", "540"],
+    ],
+  },
+  storeSales: {
+    fileName: "sample-store-sales.csv",
+    title: "店舗別売上推移",
+    subtitle: "主要店舗の月次売上サンプル",
+    unit: "万円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "東京店", "大阪店", "福岡店", "札幌店"],
+      ["2019", "420", "360", "210", "180"],
+      ["2020", "390", "330", "240", "200"],
+      ["2021", "470", "380", "290", "230"],
+      ["2022", "560", "450", "340", "260"],
+      ["2023", "690", "540", "410", "320"],
+      ["2024", "780", "620", "480", "390"],
+    ],
+  },
+  snsFollowers: {
+    fileName: "sample-sns-followers.csv",
+    title: "SNSフォロワー推移",
+    subtitle: "媒体別フォロワー数サンプル",
+    unit: "人",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Instagram", "X", "TikTok"],
+      ["2020", "1200", "900", "300"],
+      ["2021", "2600", "1500", "1800"],
+      ["2022", "5200", "2400", "6200"],
+      ["2023", "9800", "3900", "15400"],
+      ["2024", "16200", "6200", "28600"],
+      ["2025", "24100", "8400", "45200"],
+    ],
+  },
+  youtubeViews: {
+    fileName: "sample-youtube-views.csv",
+    title: "YouTube再生数推移",
+    subtitle: "チャンネル別累計再生数サンプル",
+    unit: "万回",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "解説動画", "ショート", "ライブ配信"],
+      ["2020", "80", "20", "12"],
+      ["2021", "160", "90", "38"],
+      ["2022", "310", "280", "76"],
+      ["2023", "520", "760", "150"],
+      ["2024", "820", "1480", "260"],
+      ["2025", "1160", "2360", "410"],
+    ],
+  },
+  countryGdp: {
+    fileName: "sample-country-gdp.csv",
+    title: "国別GDP比較サンプル",
+    subtitle: "初年度を100にした比較向けサンプル",
+    unit: "指数",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "日本", "米国", "中国", "インド"],
+      ["2010", "100", "100", "100", "100"],
+      ["2012", "103", "106", "120", "116"],
+      ["2014", "106", "113", "143", "135"],
+      ["2016", "109", "121", "169", "158"],
+      ["2018", "112", "131", "198", "184"],
+      ["2020", "108", "128", "215", "194"],
+      ["2022", "113", "141", "246", "225"],
+      ["2024", "117", "152", "278", "258"],
+    ],
+  },
+  stockIndex: {
+    fileName: "sample-stock-index.csv",
+    title: "株価指数比較サンプル",
+    subtitle: "2019年=100",
+    unit: "指数",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Index A", "Index B", "Index C"],
+      ["2019", "100", "100", "100"],
+      ["2020", "118", "92", "110"],
+      ["2021", "146", "126", "134"],
+      ["2022", "132", "119", "151"],
+      ["2023", "168", "142", "178"],
+      ["2024", "205", "166", "214"],
+      ["2025", "238", "182", "249"],
+    ],
+  },
+  rankingTrend: {
+    fileName: "sample-ranking-trend.csv",
+    title: "ランキング指標の推移",
+    subtitle: "スコアが大きいほど上位",
+    unit: "pt",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Alpha", "Beta", "Gamma", "Delta"],
+      ["2020", "45", "52", "31", "24"],
+      ["2021", "53", "55", "38", "29"],
+      ["2022", "61", "58", "47", "37"],
+      ["2023", "72", "63", "54", "46"],
+      ["2024", "84", "69", "62", "58"],
+      ["2025", "93", "75", "71", "66"],
+    ],
+  },
 };
 
 const state = {
+  plan: localStorage.getItem(PLAN_STORAGE_KEY) === "pro" ? "pro" : "free",
   fileName: "",
   headers: [],
   rows: [],
@@ -268,6 +528,7 @@ const state = {
     showEndLabels: true,
     showGrowth: true,
     showPoints: true,
+    includeNarrationInPng: false,
     aspectRatio: "16:9",
     periodStart: "",
     periodEnd: "",
@@ -294,6 +555,10 @@ const state = {
 const els = {
   fileInput: document.querySelector("#fileInput"),
   fileStatus: document.querySelector("#fileStatus"),
+  freeModeButton: document.querySelector("#freeModeButton"),
+  proModeButton: document.querySelector("#proModeButton"),
+  planNotice: document.querySelector("#planNotice"),
+  toast: document.querySelector("#toast"),
   sampleSelect: document.querySelector("#sampleSelect"),
   newFileButton: document.querySelector("#newFileButton"),
   exportButton: document.querySelector("#exportButton"),
@@ -341,6 +606,15 @@ const els = {
   recordChartButton: document.querySelector("#recordChartButton"),
   savePngTopButton: document.querySelector("#savePngTopButton"),
   savePngButton: document.querySelector("#savePngButton"),
+  qualityLabel: document.querySelector("#qualityLabel"),
+  includeNarrationInput: document.querySelector("#includeNarrationInput"),
+  batchExportButton: document.querySelector("#batchExportButton"),
+  comparePlansButton: document.querySelector("#comparePlansButton"),
+  planCompare: document.querySelector("#planCompare"),
+  themeLockHint: document.querySelector("#themeLockHint"),
+  narrationText: document.querySelector("#narrationText"),
+  narrationModeBadge: document.querySelector("#narrationModeBadge"),
+  copyNarrationButton: document.querySelector("#copyNarrationButton"),
   videoDurationSelect: document.querySelector("#videoDurationSelect"),
   startHoldInput: document.querySelector("#startHoldInput"),
   endHoldInput: document.querySelector("#endHoldInput"),
@@ -350,6 +624,8 @@ const els = {
 };
 
 els.fileInput.addEventListener("change", handleFileLoad);
+els.freeModeButton.addEventListener("click", () => setPlanMode("free"));
+els.proModeButton.addEventListener("click", () => setPlanMode("pro"));
 els.sampleSelect.addEventListener("change", () => {
   if (els.sampleSelect.value) createNewFile();
 });
@@ -416,6 +692,11 @@ els.showPointsInput.addEventListener("change", () => {
   renderChart();
 });
 els.themeSelect.addEventListener("change", () => {
+  if (isProTheme(els.themeSelect.value) && state.plan !== "pro") {
+    showNotice("このテンプレートは課金版機能です。課金版プレビューに切り替えると使用できます。");
+    els.themeSelect.value = state.chart.theme;
+    return;
+  }
   applyTheme(els.themeSelect.value);
   renderSeriesCheckboxes();
   renderChart();
@@ -439,6 +720,21 @@ els.gridColorInput.addEventListener("input", () => {
 els.videoDurationSelect.addEventListener("change", () => {
   state.chart.videoDuration = Number(els.videoDurationSelect.value);
 });
+els.includeNarrationInput.addEventListener("change", () => {
+  if (state.plan !== "pro") {
+    els.includeNarrationInput.checked = false;
+    state.chart.includeNarrationInPng = false;
+    showNotice("この機能は課金版で利用できます。課金版プレビューに切り替えると試せます。");
+    return;
+  }
+  state.chart.includeNarrationInPng = els.includeNarrationInput.checked;
+  renderChart();
+});
+els.batchExportButton.addEventListener("click", batchExportMaterials);
+els.comparePlansButton.addEventListener("click", () => {
+  els.planCompare.hidden = !els.planCompare.hidden;
+});
+els.copyNarrationButton.addEventListener("click", copyNarration);
 els.startHoldInput.addEventListener("input", () => {
   state.chart.startHold = Number(els.startHoldInput.value || 0);
 });
@@ -595,12 +891,15 @@ function hydrateChartInputs() {
   els.textColorInput.value = state.chart.textColor;
   els.gridColorInput.value = state.chart.gridColor;
   els.videoDurationSelect.value = String(state.chart.videoDuration);
+  els.includeNarrationInput.checked = state.chart.includeNarrationInPng;
   els.startHoldInput.value = String(state.chart.startHold);
   els.endHoldInput.value = String(state.chart.endHold);
 }
 
 function render() {
   applyCssTheme(THEMES[state.chart.theme] || THEMES.presentation);
+  renderPlanUi();
+  renderThemeOptions();
   updateButtons();
   els.editModeButton.classList.toggle("active", state.mode === "edit");
   els.chartModeButton.classList.toggle("active", state.mode === "chart");
@@ -615,6 +914,87 @@ function render() {
   renderChart();
   renderTable();
   renderDiagnostics();
+  renderNarration();
+}
+
+function setPlanMode(plan) {
+  state.plan = plan === "pro" ? "pro" : "free";
+  localStorage.setItem(PLAN_STORAGE_KEY, state.plan);
+  if (state.plan !== "pro" && isProTheme(state.chart.theme)) {
+    applyTheme("presentation");
+    showNotice("無料版では基本テーマに戻ります。Proテンプレートは課金版プレビューで利用できます。");
+  } else {
+    showNotice(
+      state.plan === "pro"
+        ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。"
+        : "無料版に切り替えました。720p・透かしありで保存されます。"
+    );
+  }
+  render();
+}
+
+function renderPlanUi() {
+  const isPro = state.plan === "pro";
+  document.body.classList.toggle("pro-mode", isPro);
+  els.freeModeButton.classList.toggle("active", !isPro);
+  els.proModeButton.classList.toggle("active", isPro);
+  els.planNotice.textContent = isPro
+    ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。現在は課金テスト中です。"
+    : "無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。";
+  els.qualityLabel.textContent = getQualityLabel();
+  els.includeNarrationInput.disabled = !isPro;
+  if (!isPro) {
+    els.includeNarrationInput.checked = false;
+    state.chart.includeNarrationInPng = false;
+  } else {
+    els.includeNarrationInput.checked = state.chart.includeNarrationInPng;
+  }
+}
+
+function renderThemeOptions() {
+  [...els.themeSelect.options].forEach((option) => {
+    option.textContent = getThemeOptionLabel(option.value);
+  });
+  els.themeSelect.value = state.chart.theme;
+}
+
+function getThemeOptionLabel(themeName) {
+  const labels = {
+    presentation: "白背景プレゼン",
+    dark: "ダークSNS",
+    newspaper: "経済レポート",
+    youtube: "YouTube解説風",
+    article: "新聞記事風",
+    finance: "金融レポート風",
+    classroom: "授業スライド風",
+    ir: "企業IR風",
+    verticalSns: "SNS縦動画風",
+    luxury: "ミニマル高級感",
+  };
+  const label = labels[themeName] || themeName;
+  return isProTheme(themeName) && state.plan !== "pro" ? `${label} 🔒 Pro` : label;
+}
+
+function isProTheme(themeName) {
+  return PRO_THEME_KEYS.includes(themeName);
+}
+
+function isProPlan() {
+  return state.plan === "pro";
+}
+
+function getQualityLabel() {
+  return isProPlan() ? "課金版：1080p / 透かしなし" : "無料版：720p / 透かしあり";
+}
+
+let noticeTimer = null;
+function showNotice(message) {
+  els.toast.textContent = message;
+  els.toast.hidden = false;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    els.toast.hidden = true;
+  }, 4200);
 }
 
 function getVisibleRows() {
@@ -680,6 +1060,88 @@ function renderDiagnostics() {
     <p>数値列候補: ${escapeHtml(numericColumns.slice(0, 3).map((item) => item.header).join("、") || "なし")}${numericColumns.length > 3 ? ` ほか${numericColumns.length - 3}列` : ""}</p>
     <p>欠損値: ${missing}件 / 文字列が混じる数値: ${mixed}件</p>
   `;
+}
+
+function renderNarration() {
+  if (!els.narrationText) return;
+  const isPro = isProPlan();
+  els.narrationModeBadge.textContent = isPro ? "詳細版 Pro" : "簡易版";
+  els.narrationText.textContent = generateNarration(isPro ? "pro" : "free");
+}
+
+function generateNarration(mode = state.plan) {
+  const data = getChartData();
+  if (data.points.length < 2 || data.series.length === 0) {
+    return "CSVを読み込むと、グラフの要点を自動で表示します。";
+  }
+  const metrics = getSeriesMetrics(data.points, data.series).filter(Boolean);
+  if (metrics.length === 0) {
+    return "選択された期間では、解説文を作成できる有効な数値が不足しています。";
+  }
+  const startYear = formatTimeLabel(data.points[0].label, data.points[0].time);
+  const endPoint = data.points[data.points.length - 1];
+  const endYear = formatTimeLabel(endPoint.label, endPoint.time);
+  if (mode !== "pro") {
+    const direction = metrics.some((item) => item.multiple >= 1) ? "上昇" : "変化";
+    return `${startYear}から${endYear}にかけて、選択された系列は長期的に${direction}しています。詳しい要因分析や系列間比較は課金版プレビューで確認できます。`;
+  }
+
+  const best = [...metrics].sort((a, b) => b.multiple - a.multiple)[0];
+  const slowest = [...metrics].sort((a, b) => a.multiple - b.multiple)[0];
+  const lead = metrics[0];
+  const parts = [
+    `${startYear}から${endYear}にかけて、${lead.name}は${formatValue(lead.firstValue)}から${formatValue(lead.lastValue)}へ変化しました。初年度比では約${formatNumber(lead.multiple)}倍、年平均成長率は約${formatNumber(lead.cagr)}%です。`,
+  ];
+  if (metrics.length > 1) {
+    parts.push(`複数系列の中では${best.name}の伸びが最も大きく、約${formatNumber(best.multiple)}倍でした。一方、伸びが最も小さいのは${slowest.name}で、約${formatNumber(slowest.multiple)}倍です。`);
+  }
+  if (lead.maxRise) parts.push(`${lead.name}の最大上昇は${formatTimeLabel(String(lead.maxRise.year), lead.maxRise.year)}で、前年差は${formatValue(lead.maxRise.diff)}でした。`);
+  if (lead.maxFall) parts.push(`最大下落は${formatTimeLabel(String(lead.maxFall.year), lead.maxFall.year)}で、前年差は${formatValue(lead.maxFall.diff)}でした。`);
+  return parts.join("");
+}
+
+function getSeriesMetrics(points, series) {
+  return series.map((item) => {
+    const valid = points
+      .map((point) => ({ time: point.time, label: point.label, value: point.values[item.column] }))
+      .filter((point) => Number.isFinite(point.value));
+    if (valid.length < 2) return null;
+    const first = valid[0];
+    const last = valid[valid.length - 1];
+    const years = Math.max(1, last.time - first.time);
+    const multiple = first.value !== 0 ? last.value / first.value : 0;
+    const cagr = first.value > 0 && last.value > 0 ? (multiple ** (1 / years) - 1) * 100 : 0;
+    const max = valid.reduce((a, b) => (b.value > a.value ? b : a), valid[0]);
+    const min = valid.reduce((a, b) => (b.value < a.value ? b : a), valid[0]);
+    let maxRise = null;
+    let maxFall = null;
+    for (let index = 1; index < valid.length; index += 1) {
+      const diff = valid[index].value - valid[index - 1].value;
+      if (!maxRise || diff > maxRise.diff) maxRise = { year: valid[index].time, diff };
+      if (!maxFall || diff < maxFall.diff) maxFall = { year: valid[index].time, diff };
+    }
+    return {
+      name: item.name,
+      firstValue: first.value,
+      lastValue: last.value,
+      multiple,
+      cagr,
+      max,
+      min,
+      maxRise,
+      maxFall,
+    };
+  });
+}
+
+async function copyNarration() {
+  const text = els.narrationText.textContent || "";
+  try {
+    await navigator.clipboard.writeText(text);
+    showNotice("解説文をコピーしました。");
+  } catch {
+    showNotice("コピーできませんでした。ブラウザの権限を確認してください。");
+  }
 }
 
 function buildTable(visibleRows) {
@@ -832,7 +1294,13 @@ function updateButtons() {
   els.recordChartButton.disabled = !hasChart || busy || !canRecordCanvas();
   if (els.savePngButton) els.savePngButton.disabled = !hasChart || busy;
   els.savePngTopButton.disabled = !hasChart || busy;
-  els.recordChartButton.textContent = busy ? "録画中" : "動画保存（WebM）";
+  els.savePngTopButton.textContent = isProPlan() ? "PNG保存（1080p・透かしなし）" : "PNG保存（720p・透かしあり）";
+  els.recordChartButton.textContent = busy
+    ? "録画中"
+    : isProPlan()
+      ? "動画保存（WebM・1080p・透かしなし）"
+      : "動画保存（WebM・720p・透かしあり）";
+  els.batchExportButton.disabled = busy;
 }
 
 function guessChartColumns() {
@@ -997,6 +1465,7 @@ function renderChart() {
 
   state.chart.progress = Math.min(1, Math.max(state.chart.progress, 1));
   drawChart(data, state.chart.progress);
+  renderNarration();
 }
 
 function hasNonPositiveValues(points, series) {
@@ -1131,7 +1600,7 @@ function playChartAnimation() {
   return runChartAnimation();
 }
 
-function runChartAnimation({ onComplete } = {}) {
+function runChartAnimation({ onComplete, exportSize } = {}) {
   const data = getChartData();
   if (data.points.length < 2 || data.series.length === 0) {
     renderChart();
@@ -1145,13 +1614,13 @@ function runChartAnimation({ onComplete } = {}) {
   const startHold = Number(state.chart.startHold || 0) * 1000;
   const endHold = Number(state.chart.endHold || 0) * 1000;
   const speedAdjusted = Math.max(1200, totalDuration - startHold - endHold) / Number(els.speedRange.value || 1);
-  drawChart(data, 0);
+  drawChart(data, 0, { exportSize });
 
   return new Promise((resolve) => {
     const step = (now) => {
       const elapsed = now - state.chart.startedAt;
       state.chart.progress = clamp((elapsed - startHold) / speedAdjusted, 0, 1);
-      drawChart(data, state.chart.progress);
+      drawChart(data, state.chart.progress, { exportSize });
       if (elapsed < startHold + speedAdjusted + endHold) {
         state.chart.animationId = requestAnimationFrame(step);
         return;
@@ -1165,15 +1634,26 @@ function runChartAnimation({ onComplete } = {}) {
   });
 }
 
-async function recordChartAnimation() {
+async function recordChartAnimation(options = {}) {
   if (state.chart.isRecording) return;
   if (!canRecordCanvas()) {
     alert("このブラウザはCanvas録画に対応していません。ChromeまたはEdgeでお試しください。");
     return;
   }
 
+  const originalRatio = state.chart.aspectRatio;
+  if (options.aspectRatio) {
+    state.chart.aspectRatio = options.aspectRatio;
+    els.aspectRatioSelect.value = options.aspectRatio;
+  }
   const data = getChartData();
-  if (data.points.length < 2 || data.series.length === 0) return;
+  if (data.points.length < 2 || data.series.length === 0) {
+    if (options.aspectRatio) {
+      state.chart.aspectRatio = originalRatio;
+      els.aspectRatioSelect.value = originalRatio;
+    }
+    return;
+  }
   if (state.mode !== "chart") {
     state.mode = "chart";
     render();
@@ -1186,6 +1666,8 @@ async function recordChartAnimation() {
 
   let stream;
   try {
+    const exportSize = getOutputCanvasSize();
+    drawChart(data, 0, { exportSize });
     stream = els.canvas.captureStream(60);
     const chunks = [];
     const recorder = new MediaRecorder(stream, { mimeType: getSupportedWebmType() });
@@ -1200,6 +1682,7 @@ async function recordChartAnimation() {
 
     recorder.start();
     await runChartAnimation({
+      exportSize,
       onComplete: () => {
         setTimeout(() => recorder.stop(), 180);
       },
@@ -1213,7 +1696,12 @@ async function recordChartAnimation() {
   } finally {
     stream?.getTracks().forEach((track) => track.stop());
     state.chart.isRecording = false;
+    if (options.aspectRatio) {
+      state.chart.aspectRatio = originalRatio;
+      els.aspectRatioSelect.value = originalRatio;
+    }
     updateButtons();
+    renderChart();
   }
 }
 
@@ -1228,7 +1716,7 @@ function savePng() {
   const data = getChartData();
   if (data.points.length < 2 || data.series.length === 0) return;
   clearCanvasHover();
-  drawChart(data, 1);
+  drawChart(data, 1, { exportSize: getOutputCanvasSize() });
   try {
     els.canvas.toBlob((blob) => {
       if (!blob) {
@@ -1236,33 +1724,58 @@ function savePng() {
         return;
       }
       downloadBlob(blob, getPngFileName());
+      renderChart();
     }, "image/png");
   } catch (error) {
     alert(`PNG保存に失敗しました。${error?.message || "ブラウザの保存機能を確認してください。"}`);
+    renderChart();
   }
 }
 
-function drawChart(data, progress) {
+async function batchExportMaterials() {
+  if (!isProPlan()) {
+    showNotice("資料セット出力は課金版機能です。課金版プレビューに切り替えると試せます。");
+    return;
+  }
+  const data = getChartData();
+  if (data.points.length < 2 || data.series.length === 0) return;
+  const originalRatio = state.chart.aspectRatio;
+  const ratios = ["16:9", "1:1", "9:16"];
+  try {
+    ratios.forEach((ratio) => {
+      state.chart.aspectRatio = ratio;
+      drawChart(data, 1, { exportSize: getOutputCanvasSize() });
+      els.canvas.toBlob((blob) => {
+        if (blob) downloadBlob(blob, `${slugify(state.chart.title || "timeseries-chart")}-${ratio.replace(":", "x")}-${getDateStamp()}.png`);
+      }, "image/png");
+    });
+    const textBlob = new Blob([generateNarration("pro")], { type: "text/plain;charset=utf-8" });
+    downloadBlob(textBlob, `${slugify(state.chart.title || "timeseries-chart")}-commentary-${getDateStamp()}.txt`);
+    await recordChartAnimation({ aspectRatio: "16:9" });
+    await recordChartAnimation({ aspectRatio: "9:16" });
+    showNotice("資料セットを書き出しました。PNG、WebM、解説文テキストを個別ダウンロードします。");
+  } catch (error) {
+    showNotice(`資料セット出力に失敗しました。${error?.message || "ブラウザの保存機能を確認してください。"}`);
+  } finally {
+    state.chart.aspectRatio = originalRatio;
+    els.aspectRatioSelect.value = originalRatio;
+    renderChart();
+  }
+}
+
+function drawChart(data, progress, options = {}) {
   const { points, series } = data;
   if (points.length < 2 || series.length === 0) return;
   const safeProgress = clamp(progress, 0, 1);
 
   const canvas = els.canvas;
-  const frameWidth = canvas.parentElement?.clientWidth || 900;
-  const ratioValue = getAspectRatioValue();
-  let cssWidth = Math.max(360, Math.min(1280, frameWidth));
-  let cssHeight = Math.round(cssWidth / ratioValue);
-  if (state.chart.aspectRatio === "9:16") {
-    cssHeight = Math.min(820, Math.max(560, cssHeight));
-    cssWidth = Math.round(cssHeight * ratioValue);
-  }
-  if (state.chart.aspectRatio === "1:1") {
-    cssWidth = Math.min(cssWidth, 760);
-    cssHeight = cssWidth;
-  }
-  const ratio = window.devicePixelRatio || 1;
-  canvas.style.width = `${cssWidth}px`;
-  canvas.style.height = `${cssHeight}px`;
+  const previewSize = getPreviewCanvasSize(canvas);
+  const exportSize = options.exportSize || null;
+  const cssWidth = exportSize?.width || previewSize.width;
+  const cssHeight = exportSize?.height || previewSize.height;
+  const ratio = exportSize ? 1 : window.devicePixelRatio || 1;
+  canvas.style.width = `${previewSize.width}px`;
+  canvas.style.height = `${previewSize.height}px`;
   canvas.width = Math.round(cssWidth * ratio);
   canvas.height = Math.round(cssHeight * ratio);
 
@@ -1274,7 +1787,8 @@ function drawChart(data, progress) {
   ctx.fillStyle = colors.background;
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-  const padding = { top: 92, right: 42, bottom: 78, left: 86 };
+  const header = getCanvasHeaderLayout(ctx, cssWidth, series, points);
+  const padding = { top: header.plotTop, right: 42, bottom: 78, left: 86 };
   const plotWidth = cssWidth - padding.left - padding.right;
   const plotHeight = cssHeight - padding.top - padding.bottom;
   const times = points.map((point) => point.time);
@@ -1292,28 +1806,105 @@ function drawChart(data, progress) {
     return padding.top + (1 - (value - scale.min) / (scale.max - scale.min || 1)) * plotHeight;
   };
 
-  drawChartFrame(ctx, { cssWidth, cssHeight, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors });
+  drawChartFrame(ctx, { cssWidth, cssHeight, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors, header });
   drawSeries(ctx, { points, series, xFor, yFor, progress: safeProgress, padding, plotWidth });
   drawHover(ctx, { points, series, xFor, yFor, padding, plotHeight, colors });
+  if (options.exportSize && isProPlan() && state.chart.includeNarrationInPng) {
+    drawNarrationOnCanvas(ctx, { cssWidth, cssHeight, padding, colors });
+  }
+  if (!isProPlan()) drawWatermark(ctx, { cssWidth, cssHeight, colors });
 
   const latest = getVisiblePoint(points, safeProgress);
   els.chartCurrent.textContent = `${formatTimeLabel(latest.label, latest.time)} / ${series.length}系列`;
   state.chart.layout = { padding, plotWidth, plotHeight, xFor, yFor, points, series, cssWidth, cssHeight };
 }
 
+function getPreviewCanvasSize(canvas) {
+  const frameWidth = canvas.parentElement?.clientWidth || 900;
+  const ratioValue = getAspectRatioValue();
+  let width = Math.max(320, Math.min(1280, frameWidth));
+  let height = Math.round(width / ratioValue);
+  if (state.chart.aspectRatio === "9:16") {
+    height = Math.min(820, Math.max(520, height));
+    width = Math.round(height * ratioValue);
+  }
+  if (state.chart.aspectRatio === "1:1") {
+    width = Math.min(width, 760);
+    height = width;
+  }
+  return { width, height };
+}
+
+function getOutputCanvasSize() {
+  if (isProPlan()) {
+    if (state.chart.aspectRatio === "1:1") return { width: 1080, height: 1080 };
+    if (state.chart.aspectRatio === "9:16") return { width: 1080, height: 1920 };
+    return { width: 1920, height: 1080 };
+  }
+  if (state.chart.aspectRatio === "1:1") return { width: 720, height: 720 };
+  if (state.chart.aspectRatio === "9:16") return { width: 720, height: 1280 };
+  return { width: 1280, height: 720 };
+}
+
+function drawWatermark(ctx, area) {
+  const text = "TimeCSV Animator";
+  ctx.save();
+  ctx.font = `700 ${Math.max(12, Math.round(area.cssWidth * 0.014))}px ${CANVAS_FONT}`;
+  ctx.textAlign = "right";
+  ctx.textBaseline = "bottom";
+  ctx.fillStyle = withAlpha(area.colors.text, 0.36);
+  ctx.fillText(text, area.cssWidth - 18, area.cssHeight - 14);
+  ctx.restore();
+}
+
+function drawNarrationOnCanvas(ctx, area) {
+  const text = generateNarration("pro");
+  if (!text) return;
+  const lines = wrapCanvasText(ctx, text, area.cssWidth - area.padding.left * 2, 2);
+  ctx.save();
+  ctx.font = `15px ${CANVAS_FONT}`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "bottom";
+  ctx.fillStyle = withAlpha(area.colors.text, 0.8);
+  lines.forEach((line, index) => {
+    ctx.fillText(line, area.padding.left, area.cssHeight - 42 + index * 18);
+  });
+  ctx.restore();
+}
+
+function wrapCanvasText(ctx, text, maxWidth, maxLines) {
+  const chars = [...text];
+  const lines = [];
+  let line = "";
+  chars.forEach((char) => {
+    const next = `${line}${char}`;
+    if (line && ctx.measureText(next).width > maxWidth) {
+      lines.push(line);
+      line = char;
+    } else {
+      line = next;
+    }
+  });
+  if (line) lines.push(line);
+  return lines.slice(0, maxLines).map((value, index) => {
+    if (index === maxLines - 1 && lines.length > maxLines) return `${value.slice(0, -1)}…`;
+    return value;
+  });
+}
+
 function drawChartFrame(ctx, area) {
-  const { cssWidth, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors } = area;
+  const { cssWidth, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors, header } = area;
   ctx.fillStyle = colors.text;
   ctx.font = `700 24px ${CANVAS_FONT}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(state.chart.title, padding.left, 24);
+  ctx.fillText(truncateCanvasText(ctx, state.chart.title, plotWidth), padding.left, 24);
 
   ctx.font = `13px ${CANVAS_FONT}`;
   ctx.fillStyle = colors.muted;
-  ctx.fillText(state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : ""), padding.left, 56);
+  ctx.fillText(truncateCanvasText(ctx, state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : ""), plotWidth), padding.left, 56);
 
-  drawLegend(ctx, series, cssWidth, padding, colors);
+  drawLegend(ctx, series, cssWidth, padding, colors, header.legendY);
 
   ctx.strokeStyle = colors.axis;
   ctx.lineWidth = 1;
@@ -1367,16 +1958,53 @@ function drawChartFrame(ctx, area) {
   const footer = [state.chart.note, state.chart.source ? `出典: ${state.chart.source}` : ""].filter(Boolean).join(" / ");
   if (footer) ctx.fillText(footer, padding.left, area.cssHeight - 14);
 
-  if (state.chart.showGrowth) drawGrowthSummary(ctx, area);
+  if (state.chart.showGrowth) drawGrowthSummary(ctx, area, header.growthRows, header.growthY);
 }
 
-function drawLegend(ctx, series, cssWidth, padding, colors) {
-  let x = padding.left + 260;
-  let y = 30;
+function getCanvasHeaderLayout(ctx, cssWidth, series, points) {
+  const paddingLeft = 86;
+  const paddingRight = 42;
+  const plotWidth = cssWidth - paddingLeft - paddingRight;
+  const legendY = 80;
+  const legendRows = Math.max(1, countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight));
+  const growthRows = state.chart.showGrowth ? getGrowthSummaryRows(points, series).slice(0, 3) : [];
+  const growthY = legendY + legendRows * 22 + 8;
+  const plotTop = Math.max(118, growthY + growthRows.length * 17 + 20);
+  return { legendY, legendRows, growthY, growthRows, plotTop, plotWidth };
+}
+
+function countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight) {
+  let rows = 1;
+  let x = paddingLeft;
   ctx.font = `12px ${CANVAS_FONT}`;
   series.forEach((item) => {
     const width = Math.min(180, ctx.measureText(item.name).width + 34);
-    if (x + width > cssWidth - padding.right) {
+    if (x > paddingLeft && x + width > cssWidth - paddingRight) {
+      rows += 1;
+      x = paddingLeft;
+    }
+    x += width + 16;
+  });
+  return rows;
+}
+
+function truncateCanvasText(ctx, text, maxWidth) {
+  const value = text || "";
+  if (ctx.measureText(value).width <= maxWidth) return value;
+  let clipped = value;
+  while (clipped.length > 1 && ctx.measureText(`${clipped}...`).width > maxWidth) {
+    clipped = clipped.slice(0, -1);
+  }
+  return `${clipped}...`;
+}
+
+function drawLegend(ctx, series, cssWidth, padding, colors, startY) {
+  let x = padding.left;
+  let y = startY;
+  ctx.font = `12px ${CANVAS_FONT}`;
+  series.forEach((item) => {
+    const width = Math.min(180, ctx.measureText(item.name).width + 34);
+    if (x > padding.left && x + width > cssWidth - padding.right) {
       x = padding.left;
       y += 22;
     }
@@ -1514,8 +2142,7 @@ function drawEndLabels(ctx, area) {
   });
 }
 
-function drawGrowthSummary(ctx, area) {
-  const { points, series, padding, colors } = area;
+function getGrowthSummaryRows(points, series) {
   const rows = series.map((item) => {
     const valid = points.filter((point) => Number.isFinite(point.values[item.column]) && point.values[item.column] > 0);
     if (valid.length < 2) return null;
@@ -1526,6 +2153,11 @@ function drawGrowthSummary(ctx, area) {
     const cagr = (multiple ** (1 / years) - 1) * 100;
     return `${item.name}: ${formatNumber(multiple)}倍 / 年平均${formatNumber(cagr)}%`;
   }).filter(Boolean);
+  return rows;
+}
+
+function drawGrowthSummary(ctx, area, rows, startY) {
+  const { padding, plotWidth, colors } = area;
 
   if (rows.length === 0) return;
   ctx.font = `12px ${CANVAS_FONT}`;
@@ -1533,7 +2165,7 @@ function drawGrowthSummary(ctx, area) {
   ctx.textBaseline = "top";
   ctx.fillStyle = colors.muted;
   rows.slice(0, 3).forEach((row, index) => {
-    ctx.fillText(row, padding.left, 72 + index * 17);
+    ctx.fillText(truncateCanvasText(ctx, row, plotWidth), padding.left, startY + index * 17);
   });
 }
 

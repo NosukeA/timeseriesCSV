@@ -16,6 +16,11 @@
             <p id="fileStatus">CSVやExcel由来の時系列データから、プレゼンやSNSに使える伸びるグラフ動画を作れます。</p>
           </div>
           <div class="actions">
+            <div class="plan-switch" aria-label="利用モード">
+              <span>現在のモード</span>
+              <button id="freeModeButton" class="plan-option active" type="button">無料版</button>
+              <button id="proModeButton" class="plan-option" type="button">課金版プレビュー</button>
+            </div>
             <label class="button primary main-action">
               <input id="fileInput" type="file" accept=".csv,text/csv">
               CSVを読み込む
@@ -25,6 +30,8 @@
             <button id="recordChartButton" class="primary main-action" type="button" disabled>動画保存（WebM）</button>
           </div>
         </header>
+        <div id="planNotice" class="plan-notice">無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。</div>
+        <div id="toast" class="toast" hidden></div>
 
         <nav class="mode-tabs" aria-label="表示モード">
           <button id="chartModeButton" class="active" type="button" disabled>グラフ作成</button>
@@ -46,6 +53,13 @@
                   <option value="sales">世界銀行: 1人あたりGDP</option>
                   <option value="ranking">世界銀行: 平均寿命</option>
                   <option value="stock">世界銀行: GDP成長率</option>
+                  <option value="companySales">会社売上推移サンプル</option>
+                  <option value="storeSales">店舗別売上推移サンプル</option>
+                  <option value="snsFollowers">SNSフォロワー推移サンプル</option>
+                  <option value="youtubeViews">YouTube再生数推移サンプル</option>
+                  <option value="countryGdp">国別GDP比較サンプル</option>
+                  <option value="stockIndex">株価指数比較サンプル</option>
+                  <option value="rankingTrend">ランキング推移サンプル</option>
                 </select>
               </label>
               <button id="newFileButton" type="button">サンプルを開く</button>
@@ -99,8 +113,16 @@
                   <option value="presentation">白背景プレゼン</option>
                   <option value="dark">ダークSNS</option>
                   <option value="newspaper">経済レポート</option>
+                  <option value="youtube">YouTube解説風 Pro</option>
+                  <option value="article">新聞記事風 Pro</option>
+                  <option value="finance">金融レポート風 Pro</option>
+                  <option value="classroom">授業スライド風 Pro</option>
+                  <option value="ir">企業IR風 Pro</option>
+                  <option value="verticalSns">SNS縦動画風 Pro</option>
+                  <option value="luxury">ミニマル高級感 Pro</option>
                 </select>
               </label>
+              <p id="themeLockHint" class="hint">Pro表示のテンプレートは課金版プレビューで利用できます。</p>
               <label>
                 <span>出力比率</span>
                 <select id="aspectRatioSelect">
@@ -206,7 +228,25 @@
 
             <details class="panel-section">
               <summary>出力</summary>
-              <p class="hint">画像と動画は上部のボタンから保存できます。CSV保存は「データ確認」タブにあります。</p>
+              <p id="qualityLabel" class="quality-label">無料版：720p / 透かしあり</p>
+              <label class="check-row standalone-check pro-only-control">
+                <input id="includeNarrationInput" type="checkbox">
+                <span>解説文をPNGに含める <small>Pro</small></span>
+              </label>
+              <button id="batchExportButton" type="button">資料セットを書き出す <span class="pro-pill">Pro</span></button>
+              <button id="comparePlansButton" type="button">無料版と課金版の違いを見る</button>
+              <div id="planCompare" class="plan-compare" hidden>
+                <div>
+                  <strong>無料版</strong>
+                  <p>720p / 透かしあり / 基本テーマ / PNG保存 / WebM保存 / 簡易解説文</p>
+                </div>
+                <div>
+                  <strong>課金版プレビュー</strong>
+                  <p>1080p / 透かしなし / 追加テンプレート / 高画質PNG・WebM / 詳細解説文 / 資料セット一括出力 / 商用利用OK</p>
+                </div>
+                <p class="price-note">課金版想定：透かしなし出力 300円 / 買い切り 980円。現在は課金テスト中です。</p>
+              </div>
+              <p class="hint">CSV保存は「データ確認」タブにあります。</p>
             </details>
 
             <details class="panel-section">
@@ -229,6 +269,14 @@
                 <strong id="chartTitle">時系列グラフ</strong>
                 <span id="chartCurrent">-</span>
               </div>
+              <section class="narration-panel">
+                <div>
+                  <strong>解説文</strong>
+                  <span id="narrationModeBadge">簡易版</span>
+                </div>
+                <p id="narrationText">CSVを読み込むと、グラフの要点を自動で表示します。</p>
+                <button id="copyNarrationButton" type="button">解説文をコピー</button>
+              </section>
             </div>
           </section>
         </section>

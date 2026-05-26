@@ -146,6 +146,58 @@ h1 {
   flex-wrap: wrap;
 }
 
+.plan-switch {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.plan-option {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.plan-option.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--button-primary-text);
+}
+
+.plan-notice {
+  padding: 9px 24px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 78%, var(--accent) 10%);
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.pro-mode .plan-notice {
+  background: color-mix(in srgb, var(--card) 72%, #b08d57 28%);
+}
+
+.toast {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 20;
+  max-width: min(420px, calc(100vw - 36px));
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .main-action {
   min-height: 44px;
   font-weight: 700;
@@ -369,6 +421,59 @@ th input:focus {
   line-height: 1.5;
 }
 
+.quality-label {
+  margin: 0 0 10px;
+  padding: 9px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--panel-soft) 76%, var(--accent) 10%);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pro-pill,
+.pro-only-control small,
+#narrationModeBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #b08d57 80%, var(--card));
+  color: #18120a;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.plan-compare {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.plan-compare strong {
+  display: block;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+
+.plan-compare p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.price-note {
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
 .speed-control input {
   width: 100%;
   accent-color: var(--accent);
@@ -445,6 +550,38 @@ canvas {
 .chart-meta strong {
   color: var(--ink);
   font-size: 16px;
+}
+
+.narration-panel {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.narration-panel > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.narration-panel strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.narration-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.narration-panel button {
+  justify-self: start;
 }
 
 .chart-tooltip {
@@ -638,6 +775,10 @@ td[contenteditable="true"] {
     justify-content: flex-start;
   }
 
+  .plan-switch {
+    justify-content: flex-start;
+  }
+
   .chart-host {
     grid-template-columns: 1fr;
   }
@@ -664,6 +805,15 @@ td[contenteditable="true"] {
   .actions .button,
   .toolbar button {
     flex: 1 1 auto;
+  }
+
+  .plan-switch {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .plan-option {
+    width: 100%;
   }
 
   .preview-stage {
