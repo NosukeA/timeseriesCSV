@@ -375,7 +375,7 @@ h1 {
   position: fixed;
   inset: 0;
   z-index: 30;
-  background: rgba(11, 28, 42, 0.18);
+  background: rgba(11, 28, 42, 0.26);
   pointer-events: none;
 }
 
@@ -442,10 +442,62 @@ h1 {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .guide-actions button {
   min-height: 34px;
+}
+
+.guide-actions .button {
+  min-height: 34px;
+}
+
+.guide-actions input[type="file"] {
+  display: none;
+}
+
+.guide-restart-button {
+  width: 100%;
+  margin: 0;
+  border-color: rgba(47, 132, 184, 0.26);
+  background: color-mix(in srgb, var(--card) 82%, var(--accent) 8%);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.help-section button {
+  width: 100%;
+  justify-content: flex-start;
+  margin-top: 8px;
+}
+
+.csv-example-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card) 82%, var(--panel) 18%);
+}
+
+.csv-example-panel strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.csv-example-panel pre {
+  margin: 0 0 6px;
+  max-width: 100%;
+  overflow: auto;
+  padding: 9px;
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--input-text);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .main-action {
@@ -1143,6 +1195,15 @@ td[contenteditable="true"] {
 
   .guide-card p {
     margin-right: 0;
+  }
+
+  .guide-actions {
+    justify-content: stretch;
+  }
+
+  .guide-actions button,
+  .guide-actions .button {
+    flex: 1 1 auto;
   }
 
   .preview-stage {

@@ -49,6 +49,11 @@
           <span id="guideStepLabel" class="guide-step-label"></span>
           <p id="guideText"></p>
           <div class="guide-actions">
+            <button id="guideSampleButton" class="primary" type="button" hidden>サンプルで試す</button>
+            <label id="guideImportButton" class="button" hidden>
+              <input id="guideFileInput" type="file" accept=".csv,text/csv">
+              自分のCSVを読み込む
+            </label>
             <button id="guideSkipButton" type="button">スキップ</button>
             <button id="guideNextButton" class="primary" type="button">次へ</button>
           </div>
@@ -347,6 +352,24 @@
             <details class="panel-section">
               <summary>データ診断</summary>
               <div id="diagnosticsPanel" class="diagnostics-panel"></div>
+            </details>
+            <details class="panel-section help-section">
+              <summary>ヘルプ</summary>
+              <button id="restartGuideButton" class="guide-restart-button" type="button">使い方ガイドをもう一度見る</button>
+              <button id="showCsvExampleButton" type="button">CSV形式の例を見る</button>
+              <button id="useSampleHelpButton" type="button">サンプルCSVを使う</button>
+              <div id="csvExamplePanel" class="csv-example-panel" hidden>
+                <strong>折れ線グラフ用CSV</strong>
+                <pre><code>year,日本,米国,中国
+2020,100,120,90
+2021,108,126,105
+2022,114,132,123</code></pre>
+                <strong>バーチャートレース用CSV</strong>
+                <pre><code>year,A社,B社,C社,D社
+2020,300,260,180,120
+2021,340,290,240,160
+2022,410,310,330,220</code></pre>
+              </div>
             </details>
           </aside>
 
