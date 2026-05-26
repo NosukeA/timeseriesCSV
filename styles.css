@@ -1,16 +1,16 @@
 :root {
   color-scheme: light;
-  --bg: #eef1ef;
-  --panel: #fbfcfa;
+  --bg: #eef5f8;
+  --panel: #f7fbfd;
   --card: #ffffff;
   --chart-bg: #ffffff;
-  --ink: #17202a;
-  --muted: #6c7280;
-  --line: #d2d9d5;
+  --ink: #102033;
+  --muted: #65768a;
+  --line: #d3e1ea;
   --grid: #e3e8ef;
   --axis: #9aa7b5;
-  --accent: #0f766e;
-  --accent-strong: #115e59;
+  --accent: #2f84b8;
+  --accent-strong: #1f5f97;
   --button-primary-text: #ffffff;
   --button-bg: #ffffff;
   --button-text: #17202a;
@@ -138,22 +138,24 @@ button:disabled {
 }
 
 .workspace {
-  min-height: calc(100vh - 28px);
+  height: calc(100vh - 28px);
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(20, 35, 31, 0.14);
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
 }
 
 .site-footer {
   display: grid;
   gap: 10px;
-  padding: 16px 20px 18px;
+  padding: 8px 20px 10px;
   border-top: 1px solid var(--line);
   background: var(--card);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.6;
 }
 
@@ -188,27 +190,72 @@ button:disabled {
 }
 
 .topbar {
-  min-height: 104px;
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 132px;
+  padding: 18px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 22px;
-  background: var(--card);
+  gap: 26px;
+  background:
+    linear-gradient(135deg, rgba(47, 132, 184, 0.16), rgba(255, 255, 255, 0.74) 46%, rgba(31, 95, 151, 0.08)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(238, 248, 253, 0.97));
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.topbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(47, 132, 184, 0.14) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(47, 132, 184, 0.12) 1px, transparent 1px);
+  background-size: 58px 28px;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.24) 62%, transparent 96%);
+}
+
+.topbar::after {
+  content: "";
+  position: absolute;
+  right: 22px;
+  bottom: 16px;
+  z-index: -1;
+  width: min(340px, 30vw);
+  height: 42px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(47, 132, 184, 0.18), transparent 68%);
+  pointer-events: none;
 }
 
 .brand {
-  max-width: 760px;
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  display: grid;
+  gap: 6px;
 }
 
 .eyebrow {
-  margin: 0 0 4px;
-  color: var(--accent);
+  margin: 0;
+  color: #1f5f97;
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.brand-logo {
+  margin: 0;
+  width: min(280px, 32vw);
+}
+
+.brand-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 h1 {
@@ -218,17 +265,57 @@ h1 {
 }
 
 .topbar p:last-child {
-  margin: 6px 0 0;
+  margin: 0;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.formula-ribbon {
+  width: fit-content;
+  max-width: min(760px, 100%);
+  margin: 2px 0 0;
+  padding: 7px 12px 7px 10px;
+  border-left: 3px solid #2f84b8;
+  border-radius: 5px;
+  background:
+    linear-gradient(90deg, rgba(47, 132, 184, 0.12), rgba(255, 255, 255, 0.58)),
+    repeating-linear-gradient(90deg, transparent 0 68px, rgba(47, 132, 184, 0.08) 68px 69px);
+  color: #123654;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  box-shadow: inset 0 0 0 1px rgba(47, 132, 184, 0.12);
+}
+
+.formula-ribbon::before {
+  content: "=CHART";
+  margin-right: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(47, 132, 184, 0.14);
+  color: #1f5f97;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0;
 }
 
 .actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  align-items: center;
+  gap: 9px;
   flex-wrap: wrap;
+  max-width: 690px;
+  padding: 10px;
+  border: 1px solid rgba(47, 132, 184, 0.22);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(237, 248, 253, 0.82));
+  box-shadow: 0 16px 38px rgba(31, 95, 151, 0.12);
+  backdrop-filter: blur(8px);
 }
 
 .plan-switch {
@@ -242,11 +329,12 @@ h1 {
 }
 
 .plan-option {
-  min-height: 30px;
+  min-height: 28px;
   padding: 0 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
+  pointer-events: auto;
 }
 
 .plan-option.active {
@@ -284,9 +372,30 @@ h1 {
 }
 
 .main-action {
-  min-height: 44px;
+  flex: 0 0 auto;
+  min-height: 40px;
+  min-width: 94px;
   font-weight: 700;
-  box-shadow: 0 2px 0 rgba(11, 94, 86, 0.18);
+  border-radius: 7px;
+  box-shadow: 0 2px 0 rgba(31, 95, 151, 0.16);
+  white-space: nowrap;
+}
+
+.actions .primary.main-action {
+  background: linear-gradient(180deg, #3f9bd0, #2877ab);
+  border-color: #2877ab;
+}
+
+.actions .main-action:not(.primary),
+.actions .button.main-action:not(.primary) {
+  border-color: rgba(47, 132, 184, 0.28);
+  background: rgba(255, 255, 255, 0.88);
+  color: #123654;
+}
+
+.actions .main-action:hover:not(:disabled),
+.actions .button.main-action:hover {
+  transform: translateY(-1px);
 }
 
 .button input[type="file"] {
@@ -318,16 +427,18 @@ h1 {
 }
 
 .chart-host {
-  min-height: calc(100vh - 170px);
+  min-height: 0;
   display: grid;
   grid-template-columns: 304px minmax(0, 1fr);
   background: var(--panel);
+  overflow: hidden;
 }
 
 .settings-panel {
   border-right: 1px solid var(--line);
   background: var(--panel);
   padding: 16px;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -600,23 +711,31 @@ th input:focus {
 
 .preview-stage {
   min-width: 0;
+  height: 100%;
   padding: 18px 20px 12px;
-  overflow: auto;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .chart-panel {
+  min-height: 0;
   display: grid;
+  grid-template-rows: minmax(0, auto) auto auto;
   gap: 14px;
+  overflow: hidden;
 }
 
 .chart-frame {
   position: relative;
   display: grid;
   place-items: center;
+  min-height: 0;
   padding: 14px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 6px;
+  overflow: hidden;
 }
 
 canvas {
@@ -913,6 +1032,7 @@ td[contenteditable="true"] {
 
   .workspace {
     min-height: 100vh;
+    height: auto;
     border: 0;
     border-radius: 0;
   }

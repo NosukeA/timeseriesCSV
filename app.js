@@ -10,23 +10,23 @@ const FREE_THEME_KEYS = ["presentation", "dark", "newspaper"];
 const PRO_THEME_KEYS = ["youtube", "article", "finance", "classroom", "ir", "verticalSns", "luxury"];
 const THEMES = {
   presentation: {
-    appBackground: "#eef1f4",
-    panelBackground: "#f7f9fb",
+    appBackground: "#eef5f8",
+    panelBackground: "#f7fbfd",
     cardBackground: "#ffffff",
     chartBackground: "#ffffff",
-    textColor: "#17202a",
-    mutedTextColor: "#647184",
-    borderColor: "#d7dee8",
-    gridColor: "#e3e8ef",
-    axisColor: "#9aa7b5",
-    buttonPrimaryBackground: "#0f766e",
+    textColor: "#102033",
+    mutedTextColor: "#65768a",
+    borderColor: "#d3e1ea",
+    gridColor: "#e4edf3",
+    axisColor: "#9bb0c0",
+    buttonPrimaryBackground: "#2f84b8",
     buttonPrimaryText: "#ffffff",
     buttonSecondaryBackground: "#ffffff",
-    buttonSecondaryText: "#17202a",
+    buttonSecondaryText: "#102033",
     inputBackground: "#ffffff",
-    inputTextColor: "#17202a",
-    inputBorderColor: "#d7dee8",
-    seriesColors: ["#0f766e", "#2563eb", "#b45309", "#be123c", "#6d28d9", "#15803d"],
+    inputTextColor: "#102033",
+    inputBorderColor: "#d3e1ea",
+    seriesColors: ["#2f84b8", "#1f5f97", "#b45309", "#be123c", "#6d28d9", "#15803d"],
   },
   dark: {
     appBackground: "#070b14",
@@ -776,8 +776,14 @@ const els = {
 };
 
 els.fileInput.addEventListener("change", handleFileLoad);
-els.freeModeButton.addEventListener("click", () => setPlanMode("free"));
-els.proModeButton.addEventListener("click", () => setPlanMode("pro"));
+els.freeModeButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  setPlanMode("free");
+});
+els.proModeButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  setPlanMode("pro");
+});
 els.sampleSelect.addEventListener("change", () => {
   if (els.sampleSelect.value) createNewFile();
 });
@@ -1119,7 +1125,7 @@ function render() {
   els.editToolbar.hidden = state.mode !== "edit";
   els.fileStatus.textContent = state.headers.length
     ? `${state.fileName} / ${state.rows.length}行 ${state.headers.length}列`
-    : "CSVから時系列グラフ動画を作るツールです。CSVを読み込むか、サンプルを開いて始めてください。";
+    : "CSVを読み込むか、サンプルを開いて始めてください。";
 
   renderChartControls();
   renderChart();
@@ -1150,6 +1156,8 @@ function renderPlanUi() {
   document.body.classList.toggle("pro-mode", isPro);
   els.freeModeButton.classList.toggle("active", !isPro);
   els.proModeButton.classList.toggle("active", isPro);
+  els.freeModeButton.setAttribute("aria-pressed", String(!isPro));
+  els.proModeButton.setAttribute("aria-pressed", String(isPro));
   els.planNotice.textContent = isPro
     ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。現在は課金テスト中です。"
     : "無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。";
@@ -1556,6 +1564,10 @@ function updateButtons() {
   const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
   const hasChart = hasData && data.points.length >= 2 && data.series.length >= minSeries;
   const busy = state.chart.isRecording;
+  const pngLabel = isProPlan() ? "PNG保存（1080p・透かしなし）" : "PNG保存（720p・透かしあり）";
+  const webmLabel = isProPlan()
+    ? "動画保存（WebM・1080p・透かしなし）"
+    : "動画保存（WebM・720p・透かしあり）";
   els.exportButton.disabled = !hasData || busy;
   els.addRowButton.disabled = !hasData || busy;
   els.addColumnButton.disabled = !hasData || busy;
@@ -1565,12 +1577,14 @@ function updateButtons() {
   els.recordChartButton.disabled = !hasChart || busy || !canRecordCanvas();
   if (els.savePngButton) els.savePngButton.disabled = !hasChart || busy;
   els.savePngTopButton.disabled = !hasChart || busy;
-  els.savePngTopButton.textContent = isProPlan() ? "PNG保存（1080p・透かしなし）" : "PNG保存（720p・透かしあり）";
+  els.savePngTopButton.textContent = "PNG保存";
+  els.savePngTopButton.title = pngLabel;
+  els.savePngTopButton.setAttribute("aria-label", pngLabel);
   els.recordChartButton.textContent = busy
     ? "録画中"
-    : isProPlan()
-      ? "動画保存（WebM・1080p・透かしなし）"
-      : "動画保存（WebM・720p・透かしあり）";
+    : "動画保存";
+  els.recordChartButton.title = webmLabel;
+  els.recordChartButton.setAttribute("aria-label", webmLabel);
   els.batchExportButton.disabled = busy;
 }
 
@@ -2140,7 +2154,7 @@ function getOutputCanvasSize() {
 }
 
 function drawWatermark(ctx, area) {
-  const text = "TimeCSV Animator";
+  const text = "時系列データアニメーター";
   ctx.save();
   ctx.font = `700 ${Math.max(12, Math.round(area.cssWidth * 0.014))}px ${CANVAS_FONT}`;
   ctx.textAlign = "right";
