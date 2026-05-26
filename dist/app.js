@@ -1,24 +1,32 @@
 const CANVAS_FONT = '"Yu Gothic", "Meiryo", "Noto Sans JP", "Segoe UI", sans-serif';
 const DEFAULT_COLORS = ["#0f766e", "#2563eb", "#c2410c", "#7c3aed", "#be123c", "#15803d", "#a16207", "#0369a1"];
+const PLAN_STORAGE_KEY = "timecsv-plan-mode";
+const FEATURE_FLAGS = {
+  barChartRaceFree: true,
+  barChartRaceMaxItemsFree: 10,
+  barChartRaceMaxItemsPro: 20,
+};
+const FREE_THEME_KEYS = ["presentation", "dark", "newspaper"];
+const PRO_THEME_KEYS = ["youtube", "article", "finance", "classroom", "ir", "verticalSns", "luxury"];
 const THEMES = {
   presentation: {
-    appBackground: "#eef1f4",
-    panelBackground: "#f7f9fb",
+    appBackground: "#eef5f8",
+    panelBackground: "#f7fbfd",
     cardBackground: "#ffffff",
     chartBackground: "#ffffff",
-    textColor: "#17202a",
-    mutedTextColor: "#647184",
-    borderColor: "#d7dee8",
-    gridColor: "#e3e8ef",
-    axisColor: "#9aa7b5",
-    buttonPrimaryBackground: "#0f766e",
+    textColor: "#102033",
+    mutedTextColor: "#65768a",
+    borderColor: "#d3e1ea",
+    gridColor: "#e4edf3",
+    axisColor: "#9bb0c0",
+    buttonPrimaryBackground: "#2f84b8",
     buttonPrimaryText: "#ffffff",
     buttonSecondaryBackground: "#ffffff",
-    buttonSecondaryText: "#17202a",
+    buttonSecondaryText: "#102033",
     inputBackground: "#ffffff",
-    inputTextColor: "#17202a",
-    inputBorderColor: "#d7dee8",
-    seriesColors: ["#0f766e", "#2563eb", "#b45309", "#be123c", "#6d28d9", "#15803d"],
+    inputTextColor: "#102033",
+    inputBorderColor: "#d3e1ea",
+    seriesColors: ["#2f84b8", "#1f5f97", "#b45309", "#be123c", "#6d28d9", "#15803d"],
   },
   dark: {
     appBackground: "#070b14",
@@ -57,6 +65,139 @@ const THEMES = {
     inputTextColor: "#1c1917",
     inputBorderColor: "#cfc2ae",
     seriesColors: ["#1e3a8a", "#991b1b", "#166534", "#b45309", "#334155", "#7c2d12"],
+  },
+  youtube: {
+    appBackground: "#101010",
+    panelBackground: "#171717",
+    cardBackground: "#202020",
+    chartBackground: "#0f1115",
+    textColor: "#ffffff",
+    mutedTextColor: "#c7c7c7",
+    borderColor: "#333333",
+    gridColor: "#30343b",
+    axisColor: "#6b7280",
+    buttonPrimaryBackground: "#ef4444",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#262626",
+    buttonSecondaryText: "#ffffff",
+    inputBackground: "#121212",
+    inputTextColor: "#ffffff",
+    inputBorderColor: "#3f3f46",
+    seriesColors: ["#ef4444", "#38bdf8", "#facc15", "#22c55e", "#f472b6", "#a78bfa"],
+  },
+  article: {
+    appBackground: "#ece7dc",
+    panelBackground: "#f7f2e8",
+    cardBackground: "#fffaf0",
+    chartBackground: "#fffdf7",
+    textColor: "#1f2933",
+    mutedTextColor: "#6b6258",
+    borderColor: "#cfc5b4",
+    gridColor: "#ddd3c2",
+    axisColor: "#988d7f",
+    buttonPrimaryBackground: "#111827",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#fffdf7",
+    buttonSecondaryText: "#1f2933",
+    inputBackground: "#fffdf7",
+    inputTextColor: "#1f2933",
+    inputBorderColor: "#cfc5b4",
+    seriesColors: ["#111827", "#b91c1c", "#1d4ed8", "#047857", "#b45309", "#6d28d9"],
+  },
+  finance: {
+    appBackground: "#e9eef3",
+    panelBackground: "#f7fafc",
+    cardBackground: "#ffffff",
+    chartBackground: "#ffffff",
+    textColor: "#111827",
+    mutedTextColor: "#526173",
+    borderColor: "#cbd5e1",
+    gridColor: "#dbe4ee",
+    axisColor: "#94a3b8",
+    buttonPrimaryBackground: "#0f3d5e",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#ffffff",
+    buttonSecondaryText: "#0f172a",
+    inputBackground: "#ffffff",
+    inputTextColor: "#111827",
+    inputBorderColor: "#cbd5e1",
+    seriesColors: ["#0f3d5e", "#b91c1c", "#047857", "#b45309", "#4338ca", "#64748b"],
+  },
+  classroom: {
+    appBackground: "#eef6ff",
+    panelBackground: "#f8fbff",
+    cardBackground: "#ffffff",
+    chartBackground: "#ffffff",
+    textColor: "#18212f",
+    mutedTextColor: "#617187",
+    borderColor: "#c9d8eb",
+    gridColor: "#dbeafe",
+    axisColor: "#93a9c5",
+    buttonPrimaryBackground: "#2563eb",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#ffffff",
+    buttonSecondaryText: "#18212f",
+    inputBackground: "#ffffff",
+    inputTextColor: "#18212f",
+    inputBorderColor: "#c9d8eb",
+    seriesColors: ["#2563eb", "#f97316", "#16a34a", "#dc2626", "#7c3aed", "#0891b2"],
+  },
+  ir: {
+    appBackground: "#edf0f4",
+    panelBackground: "#f9fafb",
+    cardBackground: "#ffffff",
+    chartBackground: "#ffffff",
+    textColor: "#111827",
+    mutedTextColor: "#5b6675",
+    borderColor: "#d1d9e3",
+    gridColor: "#e5eaf0",
+    axisColor: "#98a2b3",
+    buttonPrimaryBackground: "#0b5a5a",
+    buttonPrimaryText: "#ffffff",
+    buttonSecondaryBackground: "#ffffff",
+    buttonSecondaryText: "#111827",
+    inputBackground: "#ffffff",
+    inputTextColor: "#111827",
+    inputBorderColor: "#d1d9e3",
+    seriesColors: ["#0b5a5a", "#334155", "#0f766e", "#b45309", "#2563eb", "#be123c"],
+  },
+  verticalSns: {
+    appBackground: "#160f24",
+    panelBackground: "#21172f",
+    cardBackground: "#2b1f3d",
+    chartBackground: "#17111f",
+    textColor: "#fff7ed",
+    mutedTextColor: "#d6c6e6",
+    borderColor: "#4c3a64",
+    gridColor: "#3b2f4f",
+    axisColor: "#8b78a8",
+    buttonPrimaryBackground: "#f97316",
+    buttonPrimaryText: "#1f1308",
+    buttonSecondaryBackground: "#312343",
+    buttonSecondaryText: "#fff7ed",
+    inputBackground: "#17111f",
+    inputTextColor: "#fff7ed",
+    inputBorderColor: "#4c3a64",
+    seriesColors: ["#f97316", "#22d3ee", "#e879f9", "#a3e635", "#fb7185", "#facc15"],
+  },
+  luxury: {
+    appBackground: "#11100e",
+    panelBackground: "#181613",
+    cardBackground: "#211f1b",
+    chartBackground: "#181613",
+    textColor: "#f7f3ea",
+    mutedTextColor: "#c8bda9",
+    borderColor: "#4d4233",
+    gridColor: "#3d352b",
+    axisColor: "#9b8d78",
+    buttonPrimaryBackground: "#b08d57",
+    buttonPrimaryText: "#18120a",
+    buttonSecondaryBackground: "#2a251e",
+    buttonSecondaryText: "#f7f3ea",
+    inputBackground: "#211f1b",
+    inputTextColor: "#f7f3ea",
+    inputBorderColor: "#4d4233",
+    seriesColors: ["#9a6b24", "#1f2937", "#7f1d1d", "#14532d", "#312e81", "#854d0e"],
   },
 };
 
@@ -241,9 +382,260 @@ const SAMPLE_DATASETS = {
       ["2024", "0.1", "2.8", "5.0"],
     ],
   },
+  companySales: {
+    fileName: "sample-company-sales.csv",
+    title: "会社売上の推移",
+    subtitle: "事業別の売上成長サンプル",
+    unit: "百万円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "国内事業", "海外事業", "新規事業"],
+      ["2018", "820", "240", "30"],
+      ["2019", "910", "310", "55"],
+      ["2020", "870", "380", "96"],
+      ["2021", "980", "520", "150"],
+      ["2022", "1160", "760", "230"],
+      ["2023", "1320", "980", "360"],
+      ["2024", "1510", "1240", "540"],
+    ],
+  },
+  storeSales: {
+    fileName: "sample-store-sales.csv",
+    title: "店舗別売上推移",
+    subtitle: "主要店舗の月次売上サンプル",
+    unit: "万円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "東京店", "大阪店", "福岡店", "札幌店"],
+      ["2019", "420", "360", "210", "180"],
+      ["2020", "390", "330", "240", "200"],
+      ["2021", "470", "380", "290", "230"],
+      ["2022", "560", "450", "340", "260"],
+      ["2023", "690", "540", "410", "320"],
+      ["2024", "780", "620", "480", "390"],
+    ],
+  },
+  snsFollowers: {
+    fileName: "sample-sns-followers.csv",
+    title: "SNSフォロワー推移",
+    subtitle: "媒体別フォロワー数サンプル",
+    unit: "人",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Instagram", "X", "TikTok"],
+      ["2020", "1200", "900", "300"],
+      ["2021", "2600", "1500", "1800"],
+      ["2022", "5200", "2400", "6200"],
+      ["2023", "9800", "3900", "15400"],
+      ["2024", "16200", "6200", "28600"],
+      ["2025", "24100", "8400", "45200"],
+    ],
+  },
+  youtubeViews: {
+    fileName: "sample-youtube-views.csv",
+    title: "YouTube再生数推移",
+    subtitle: "チャンネル別累計再生数サンプル",
+    unit: "万回",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "解説動画", "ショート", "ライブ配信"],
+      ["2020", "80", "20", "12"],
+      ["2021", "160", "90", "38"],
+      ["2022", "310", "280", "76"],
+      ["2023", "520", "760", "150"],
+      ["2024", "820", "1480", "260"],
+      ["2025", "1160", "2360", "410"],
+    ],
+  },
+  countryGdp: {
+    fileName: "sample-country-gdp.csv",
+    title: "国別GDP比較サンプル",
+    subtitle: "初年度を100にした比較向けサンプル",
+    unit: "指数",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "日本", "米国", "中国", "インド"],
+      ["2010", "100", "100", "100", "100"],
+      ["2012", "103", "106", "120", "116"],
+      ["2014", "106", "113", "143", "135"],
+      ["2016", "109", "121", "169", "158"],
+      ["2018", "112", "131", "198", "184"],
+      ["2020", "108", "128", "215", "194"],
+      ["2022", "113", "141", "246", "225"],
+      ["2024", "117", "152", "278", "258"],
+    ],
+  },
+  stockIndex: {
+    fileName: "sample-stock-index.csv",
+    title: "株価指数比較サンプル",
+    subtitle: "2019年=100",
+    unit: "指数",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Index A", "Index B", "Index C"],
+      ["2019", "100", "100", "100"],
+      ["2020", "118", "92", "110"],
+      ["2021", "146", "126", "134"],
+      ["2022", "132", "119", "151"],
+      ["2023", "168", "142", "178"],
+      ["2024", "205", "166", "214"],
+      ["2025", "238", "182", "249"],
+    ],
+  },
+  rankingTrend: {
+    fileName: "sample-ranking-trend.csv",
+    title: "ランキング指標の推移",
+    subtitle: "スコアが大きいほど上位",
+    unit: "pt",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Alpha", "Beta", "Gamma", "Delta"],
+      ["2020", "45", "52", "31", "24"],
+      ["2021", "53", "55", "38", "29"],
+      ["2022", "61", "58", "47", "37"],
+      ["2023", "72", "63", "54", "46"],
+      ["2024", "84", "69", "62", "58"],
+      ["2025", "93", "75", "71", "66"],
+    ],
+  },
+  raceCountryGdp: {
+    graphMode: "barRace",
+    fileName: "sample-race-country-gdp.csv",
+    title: "国別GDPランキング推移",
+    subtitle: "バーチャートレース用サンプル",
+    unit: "兆ドル",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "アメリカ", "中国", "日本", "ドイツ", "インド", "イギリス", "フランス", "ブラジル", "カナダ", "韓国", "豪州", "メキシコ"],
+      ["2000", "10.3", "1.2", "4.9", "1.9", "0.5", "1.6", "1.4", "0.7", "0.8", "0.6", "0.4", "0.5"],
+      ["2005", "13.1", "2.3", "4.8", "2.6", "0.8", "2.2", "2.0", "1.1", "1.2", "0.9", "0.7", "0.8"],
+      ["2010", "15.0", "6.1", "5.7", "3.4", "1.7", "2.5", "2.6", "2.2", "1.6", "1.1", "1.1", "1.1"],
+      ["2015", "18.2", "11.1", "4.4", "3.4", "2.1", "2.9", "2.4", "1.8", "1.6", "1.4", "1.3", "1.2"],
+      ["2020", "21.0", "14.7", "5.0", "3.9", "2.7", "2.7", "2.6", "1.5", "1.6", "1.6", "1.4", "1.1"],
+      ["2025", "27.0", "20.5", "4.9", "4.5", "4.0", "3.4", "3.0", "2.3", "2.1", "2.0", "1.8", "1.7"],
+    ],
+  },
+  racePrefPopulation: {
+    graphMode: "barRace",
+    fileName: "sample-race-pref-population.csv",
+    title: "都道府県人口ランキング推移",
+    subtitle: "人口変化が見える架空サンプル",
+    unit: "万人",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "東京", "神奈川", "大阪", "愛知", "埼玉", "千葉", "兵庫", "福岡", "北海道", "沖縄"],
+      ["2000", "1200", "850", "880", "700", "690", "590", "555", "500", "570", "130"],
+      ["2005", "1260", "875", "882", "725", "705", "605", "560", "505", "560", "136"],
+      ["2010", "1320", "905", "886", "742", "720", "620", "558", "510", "550", "140"],
+      ["2015", "1360", "915", "884", "750", "725", "625", "552", "515", "540", "143"],
+      ["2020", "1400", "925", "880", "755", "735", "630", "545", "525", "528", "146"],
+      ["2025", "1420", "930", "872", "760", "738", "632", "536", "535", "510", "149"],
+    ],
+  },
+  raceCompanySales: {
+    graphMode: "barRace",
+    fileName: "sample-race-company-sales.csv",
+    title: "企業売上ランキング推移",
+    subtitle: "成長企業の順位入れ替わりサンプル",
+    unit: "億円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Kappa", "Nova", "Orion", "Pulse"],
+      ["2018", "820", "760", "610", "540", "320", "260", "180", "120", "90", "60"],
+      ["2019", "880", "790", "660", "590", "410", "300", "230", "190", "140", "100"],
+      ["2020", "840", "820", "710", "650", "560", "420", "310", "280", "230", "180"],
+      ["2021", "960", "850", "780", "760", "820", "610", "420", "460", "350", "290"],
+      ["2022", "1100", "920", "880", "930", "1180", "830", "620", "710", "540", "460"],
+      ["2023", "1280", "1040", "970", "1160", "1560", "1080", "850", "980", "760", "690"],
+      ["2024", "1450", "1180", "1120", "1380", "1980", "1320", "1090", "1270", "990", "910"],
+    ],
+  },
+  raceSnsFollowers: {
+    graphMode: "barRace",
+    fileName: "sample-race-sns-followers.csv",
+    title: "SNSフォロワー数ランキング推移",
+    subtitle: "媒体・アカウント別の伸び方サンプル",
+    unit: "人",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Travel JP", "Food Lab", "Study Hub", "Game Now", "Beauty Box", "Finance Note", "Local News", "Music Clip", "Fit Life", "DIY Room"],
+      ["2020", "12000", "18000", "9000", "15000", "22000", "6000", "8000", "5000", "7000", "4000"],
+      ["2021", "22000", "26000", "18000", "31000", "30000", "12000", "14000", "16000", "13000", "10000"],
+      ["2022", "41000", "38000", "33000", "62000", "43000", "26000", "22000", "36000", "28000", "24000"],
+      ["2023", "76000", "56000", "62000", "112000", "68000", "52000", "33000", "71000", "54000", "50000"],
+      ["2024", "124000", "82000", "102000", "185000", "96000", "93000", "47000", "126000", "88000", "91000"],
+      ["2025", "190000", "118000", "161000", "276000", "132000", "151000", "63000", "210000", "139000", "148000"],
+    ],
+  },
+  raceYoutubeViews: {
+    graphMode: "barRace",
+    fileName: "sample-race-youtube-views.csv",
+    title: "YouTube再生数ランキング推移",
+    subtitle: "チャンネル別累計再生数サンプル",
+    unit: "万回",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "News Talk", "Study Tube", "Short Lab", "Game Cast", "Cooking Pro", "Travel Log", "Money School", "Music Studio", "Kids Fun", "Tech Review"],
+      ["2020", "120", "80", "30", "160", "90", "70", "40", "60", "110", "50"],
+      ["2021", "260", "180", "210", "340", "170", "150", "110", "180", "220", "130"],
+      ["2022", "430", "360", "780", "620", "310", "290", "260", "420", "360", "300"],
+      ["2023", "690", "620", "1680", "960", "530", "520", "540", "880", "570", "610"],
+      ["2024", "980", "1040", "3100", "1450", "860", "920", "1060", "1540", "840", "1150"],
+      ["2025", "1320", "1680", "5200", "2100", "1280", "1480", "1840", "2580", "1220", "1900"],
+    ],
+  },
+  raceProductSales: {
+    graphMode: "barRace",
+    fileName: "sample-race-product-sales.csv",
+    title: "商品別売上ランキング推移",
+    subtitle: "カテゴリ別売上の入れ替わりサンプル",
+    unit: "万円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "Aセット", "Bドリンク", "C家電", "Dコスメ", "E教材", "F雑貨", "G食品", "Hアプリ"],
+      ["2020", "520", "760", "430", "610", "240", "390", "700", "120"],
+      ["2021", "610", "820", "590", "760", "360", "430", "780", "260"],
+      ["2022", "720", "880", "810", "930", "540", "520", "820", "520"],
+      ["2023", "860", "940", "1180", "1200", "820", "690", "910", "980"],
+      ["2024", "1030", "990", "1540", "1580", "1160", "880", "970", "1640"],
+      ["2025", "1220", "1050", "1960", "2030", "1580", "1120", "1040", "2520"],
+    ],
+  },
+  raceStoreSales: {
+    graphMode: "barRace",
+    fileName: "sample-race-store-sales.csv",
+    title: "店舗別売上ランキング推移",
+    subtitle: "店舗別売上の成長サンプル",
+    unit: "万円",
+    note: "架空データ",
+    source: "サンプルデータ",
+    rows: [
+      ["年", "東京店", "大阪店", "名古屋店", "福岡店", "札幌店", "仙台店", "広島店", "横浜店", "京都店", "神戸店"],
+      ["2019", "420", "380", "260", "210", "180", "150", "130", "300", "220", "240"],
+      ["2020", "390", "350", "280", "240", "200", "170", "150", "310", "210", "230"],
+      ["2021", "470", "410", "330", "300", "230", "220", "190", "360", "260", "280"],
+      ["2022", "560", "480", "410", "380", "270", "300", "260", "430", "330", "340"],
+      ["2023", "690", "570", "520", "480", "340", "410", "360", "540", "430", "440"],
+      ["2024", "820", "690", "660", "610", "430", "560", "500", "680", "560", "570"],
+    ],
+  },
 };
 
 const state = {
+  plan: localStorage.getItem(PLAN_STORAGE_KEY) === "pro" ? "pro" : "free",
   fileName: "",
   headers: [],
   rows: [],
@@ -252,6 +644,7 @@ const state = {
   query: "",
   mode: "chart",
   chart: {
+    graphMode: "line",
     timeColumn: 0,
     valueColumns: [],
     title: "時系列グラフ",
@@ -268,6 +661,16 @@ const state = {
     showEndLabels: true,
     showGrowth: true,
     showPoints: true,
+    includeNarrationInPng: false,
+    barTopN: 10,
+    barSortOrder: "desc",
+    barScaleMode: "global",
+    barShowZero: false,
+    barAllowNegative: false,
+    barValueLabels: true,
+    barRankLabels: true,
+    barDecimalPlaces: 1,
+    barYearPosition: "topRight",
     aspectRatio: "16:9",
     periodStart: "",
     periodEnd: "",
@@ -294,6 +697,10 @@ const state = {
 const els = {
   fileInput: document.querySelector("#fileInput"),
   fileStatus: document.querySelector("#fileStatus"),
+  freeModeButton: document.querySelector("#freeModeButton"),
+  proModeButton: document.querySelector("#proModeButton"),
+  planNotice: document.querySelector("#planNotice"),
+  toast: document.querySelector("#toast"),
   sampleSelect: document.querySelector("#sampleSelect"),
   newFileButton: document.querySelector("#newFileButton"),
   exportButton: document.querySelector("#exportButton"),
@@ -311,6 +718,7 @@ const els = {
   chartTitle: document.querySelector("#chartTitle"),
   chartCurrent: document.querySelector("#chartCurrent"),
   chartTooltip: document.querySelector("#chartTooltip"),
+  graphModeSelect: document.querySelector("#graphModeSelect"),
   timeColumnSelect: document.querySelector("#timeColumnSelect"),
   valueColumnList: document.querySelector("#valueColumnList"),
   chartTitleInput: document.querySelector("#chartTitleInput"),
@@ -341,6 +749,24 @@ const els = {
   recordChartButton: document.querySelector("#recordChartButton"),
   savePngTopButton: document.querySelector("#savePngTopButton"),
   savePngButton: document.querySelector("#savePngButton"),
+  qualityLabel: document.querySelector("#qualityLabel"),
+  includeNarrationInput: document.querySelector("#includeNarrationInput"),
+  batchExportButton: document.querySelector("#batchExportButton"),
+  comparePlansButton: document.querySelector("#comparePlansButton"),
+  planCompare: document.querySelector("#planCompare"),
+  themeLockHint: document.querySelector("#themeLockHint"),
+  barTopNSelect: document.querySelector("#barTopNSelect"),
+  barSortOrderSelect: document.querySelector("#barSortOrderSelect"),
+  barScaleModeSelect: document.querySelector("#barScaleModeSelect"),
+  barDecimalSelect: document.querySelector("#barDecimalSelect"),
+  barYearPositionSelect: document.querySelector("#barYearPositionSelect"),
+  barShowZeroInput: document.querySelector("#barShowZeroInput"),
+  barAllowNegativeInput: document.querySelector("#barAllowNegativeInput"),
+  barValueLabelsInput: document.querySelector("#barValueLabelsInput"),
+  barRankLabelsInput: document.querySelector("#barRankLabelsInput"),
+  narrationText: document.querySelector("#narrationText"),
+  narrationModeBadge: document.querySelector("#narrationModeBadge"),
+  copyNarrationButton: document.querySelector("#copyNarrationButton"),
   videoDurationSelect: document.querySelector("#videoDurationSelect"),
   startHoldInput: document.querySelector("#startHoldInput"),
   endHoldInput: document.querySelector("#endHoldInput"),
@@ -350,6 +776,14 @@ const els = {
 };
 
 els.fileInput.addEventListener("change", handleFileLoad);
+els.freeModeButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  setPlanMode("free");
+});
+els.proModeButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  setPlanMode("pro");
+});
 els.sampleSelect.addEventListener("change", () => {
   if (els.sampleSelect.value) createNewFile();
 });
@@ -364,6 +798,13 @@ els.playChartButton.addEventListener("click", () => playChartAnimation());
 els.recordChartButton.addEventListener("click", recordChartAnimation);
 els.savePngTopButton.addEventListener("click", savePng);
 els.savePngButton?.addEventListener("click", savePng);
+els.graphModeSelect.addEventListener("change", () => {
+  state.chart.graphMode = els.graphModeSelect.value;
+  if (state.chart.graphMode === "barRace") {
+    enforceBarRaceTopLimit();
+  }
+  render();
+});
 els.timeColumnSelect.addEventListener("change", () => {
   state.chart.timeColumn = Number(els.timeColumnSelect.value);
   renderChart();
@@ -416,6 +857,11 @@ els.showPointsInput.addEventListener("change", () => {
   renderChart();
 });
 els.themeSelect.addEventListener("change", () => {
+  if (isProTheme(els.themeSelect.value) && state.plan !== "pro") {
+    showNotice("このテンプレートは課金版機能です。課金版プレビューに切り替えると使用できます。");
+    els.themeSelect.value = state.chart.theme;
+    return;
+  }
   applyTheme(els.themeSelect.value);
   renderSeriesCheckboxes();
   renderChart();
@@ -439,6 +885,58 @@ els.gridColorInput.addEventListener("input", () => {
 els.videoDurationSelect.addEventListener("change", () => {
   state.chart.videoDuration = Number(els.videoDurationSelect.value);
 });
+els.includeNarrationInput.addEventListener("change", () => {
+  if (state.plan !== "pro") {
+    els.includeNarrationInput.checked = false;
+    state.chart.includeNarrationInPng = false;
+    showNotice("この機能は課金版で利用できます。課金版プレビューに切り替えると試せます。");
+    return;
+  }
+  state.chart.includeNarrationInPng = els.includeNarrationInput.checked;
+  renderChart();
+});
+els.barTopNSelect.addEventListener("change", () => {
+  state.chart.barTopN = Number(els.barTopNSelect.value);
+  enforceBarRaceTopLimit();
+  renderChart();
+});
+els.barSortOrderSelect.addEventListener("change", () => {
+  state.chart.barSortOrder = els.barSortOrderSelect.value;
+  renderChart();
+});
+els.barScaleModeSelect.addEventListener("change", () => {
+  state.chart.barScaleMode = els.barScaleModeSelect.value;
+  renderChart();
+});
+els.barDecimalSelect.addEventListener("change", () => {
+  state.chart.barDecimalPlaces = Number(els.barDecimalSelect.value);
+  renderChart();
+});
+els.barYearPositionSelect.addEventListener("change", () => {
+  state.chart.barYearPosition = els.barYearPositionSelect.value;
+  renderChart();
+});
+els.barShowZeroInput.addEventListener("change", () => {
+  state.chart.barShowZero = els.barShowZeroInput.checked;
+  renderChart();
+});
+els.barAllowNegativeInput.addEventListener("change", () => {
+  state.chart.barAllowNegative = els.barAllowNegativeInput.checked;
+  renderChart();
+});
+els.barValueLabelsInput.addEventListener("change", () => {
+  state.chart.barValueLabels = els.barValueLabelsInput.checked;
+  renderChart();
+});
+els.barRankLabelsInput.addEventListener("change", () => {
+  state.chart.barRankLabels = els.barRankLabelsInput.checked;
+  renderChart();
+});
+els.batchExportButton.addEventListener("click", batchExportMaterials);
+els.comparePlansButton.addEventListener("click", () => {
+  els.planCompare.hidden = !els.planCompare.hidden;
+});
+els.copyNarrationButton.addEventListener("click", copyNarration);
 els.startHoldInput.addEventListener("input", () => {
   state.chart.startHold = Number(els.startHoldInput.value || 0);
 });
@@ -480,6 +978,10 @@ function createNewFile() {
   state.chart.unit = sample.unit || "";
   state.chart.note = sample.note || "";
   state.chart.source = sample.source || "サンプルデータ";
+  state.chart.graphMode = sample.graphMode || "line";
+  if (state.chart.graphMode === "barRace") {
+    state.chart.barTopN = Math.min(10, getBarRaceTopLimit());
+  }
   loadData(sample.fileName, sample.rows);
   els.sampleSelect.value = key;
   setMode("chart");
@@ -574,6 +1076,7 @@ function syncChartText() {
 
 function hydrateChartInputs() {
   els.chartTitleInput.value = state.chart.title;
+  els.graphModeSelect.value = state.chart.graphMode;
   els.subtitleInput.value = state.chart.subtitle;
   els.xAxisInput.value = state.chart.xAxisName;
   els.yAxisInput.value = state.chart.yAxisName;
@@ -595,26 +1098,136 @@ function hydrateChartInputs() {
   els.textColorInput.value = state.chart.textColor;
   els.gridColorInput.value = state.chart.gridColor;
   els.videoDurationSelect.value = String(state.chart.videoDuration);
+  els.includeNarrationInput.checked = state.chart.includeNarrationInPng;
+  els.barTopNSelect.value = String(state.chart.barTopN);
+  els.barSortOrderSelect.value = state.chart.barSortOrder;
+  els.barScaleModeSelect.value = state.chart.barScaleMode;
+  els.barDecimalSelect.value = String(state.chart.barDecimalPlaces);
+  els.barYearPositionSelect.value = state.chart.barYearPosition;
+  els.barShowZeroInput.checked = state.chart.barShowZero;
+  els.barAllowNegativeInput.checked = state.chart.barAllowNegative;
+  els.barValueLabelsInput.checked = state.chart.barValueLabels;
+  els.barRankLabelsInput.checked = state.chart.barRankLabels;
   els.startHoldInput.value = String(state.chart.startHold);
   els.endHoldInput.value = String(state.chart.endHold);
 }
 
 function render() {
   applyCssTheme(THEMES[state.chart.theme] || THEMES.presentation);
+  renderPlanUi();
+  renderThemeOptions();
   updateButtons();
   els.editModeButton.classList.toggle("active", state.mode === "edit");
   els.chartModeButton.classList.toggle("active", state.mode === "chart");
   els.chartHost.hidden = state.mode !== "chart";
+  els.chartHost.dataset.graphMode = state.chart.graphMode;
   els.tableHost.hidden = state.mode !== "edit";
   els.editToolbar.hidden = state.mode !== "edit";
   els.fileStatus.textContent = state.headers.length
     ? `${state.fileName} / ${state.rows.length}行 ${state.headers.length}列`
-    : "CSVから時系列グラフ動画を作るツールです。CSVを読み込むか、サンプルを開いて始めてください。";
+    : "CSVを読み込むか、サンプルを開いて始めてください。";
 
   renderChartControls();
   renderChart();
   renderTable();
   renderDiagnostics();
+  renderNarration();
+}
+
+function setPlanMode(plan) {
+  state.plan = plan === "pro" ? "pro" : "free";
+  localStorage.setItem(PLAN_STORAGE_KEY, state.plan);
+  if (state.plan !== "pro" && isProTheme(state.chart.theme)) {
+    applyTheme("presentation");
+    showNotice("無料版では基本テーマに戻ります。Proテンプレートは課金版プレビューで利用できます。");
+  } else {
+    showNotice(
+      state.plan === "pro"
+        ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。"
+        : "無料版に切り替えました。720p・透かしありで保存されます。"
+    );
+  }
+  if (state.chart.graphMode === "barRace") enforceBarRaceTopLimit();
+  render();
+}
+
+function renderPlanUi() {
+  const isPro = state.plan === "pro";
+  document.body.classList.toggle("pro-mode", isPro);
+  els.freeModeButton.classList.toggle("active", !isPro);
+  els.proModeButton.classList.toggle("active", isPro);
+  els.freeModeButton.setAttribute("aria-pressed", String(!isPro));
+  els.proModeButton.setAttribute("aria-pressed", String(isPro));
+  els.planNotice.textContent = isPro
+    ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。現在は課金テスト中です。"
+    : "無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。";
+  els.qualityLabel.textContent = getQualityLabel();
+  els.includeNarrationInput.disabled = !isPro;
+  if (!isPro) {
+    els.includeNarrationInput.checked = false;
+    state.chart.includeNarrationInPng = false;
+  } else {
+    els.includeNarrationInput.checked = state.chart.includeNarrationInPng;
+  }
+}
+
+function renderThemeOptions() {
+  [...els.themeSelect.options].forEach((option) => {
+    option.textContent = getThemeOptionLabel(option.value);
+  });
+  els.themeSelect.value = state.chart.theme;
+}
+
+function getThemeOptionLabel(themeName) {
+  const labels = {
+    presentation: "白背景プレゼン",
+    dark: "ダークSNS",
+    newspaper: "経済レポート",
+    youtube: "YouTube解説風",
+    article: "新聞記事風",
+    finance: "金融レポート風",
+    classroom: "授業スライド風",
+    ir: "企業IR風",
+    verticalSns: "SNS縦動画風",
+    luxury: "ミニマル高級感",
+  };
+  const label = labels[themeName] || themeName;
+  return isProTheme(themeName) && state.plan !== "pro" ? `${label} 🔒 Pro` : label;
+}
+
+function isProTheme(themeName) {
+  return PRO_THEME_KEYS.includes(themeName);
+}
+
+function isProPlan() {
+  return state.plan === "pro";
+}
+
+function getQualityLabel() {
+  return isProPlan() ? "課金版：1080p / 透かしなし" : "無料版：720p / 透かしあり";
+}
+
+function getBarRaceTopLimit() {
+  return isProPlan() ? FEATURE_FLAGS.barChartRaceMaxItemsPro : FEATURE_FLAGS.barChartRaceMaxItemsFree;
+}
+
+function enforceBarRaceTopLimit() {
+  const limit = getBarRaceTopLimit();
+  if (state.chart.barTopN > limit) {
+    state.chart.barTopN = limit;
+    els.barTopNSelect.value = String(limit);
+    showNotice("無料版ではTop 10まで表示できます。課金版プレビューではTop 20まで利用できます。");
+  }
+}
+
+let noticeTimer = null;
+function showNotice(message) {
+  els.toast.textContent = message;
+  els.toast.hidden = false;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    els.toast.hidden = true;
+  }, 4200);
 }
 
 function getVisibleRows() {
@@ -680,6 +1293,132 @@ function renderDiagnostics() {
     <p>数値列候補: ${escapeHtml(numericColumns.slice(0, 3).map((item) => item.header).join("、") || "なし")}${numericColumns.length > 3 ? ` ほか${numericColumns.length - 3}列` : ""}</p>
     <p>欠損値: ${missing}件 / 文字列が混じる数値: ${mixed}件</p>
   `;
+}
+
+function renderNarration() {
+  if (!els.narrationText) return;
+  const isPro = isProPlan();
+  els.narrationModeBadge.textContent = isPro ? "詳細版 Pro" : "簡易版";
+  els.narrationText.textContent = generateNarration(isPro ? "pro" : "free");
+}
+
+function generateNarration(mode = state.plan) {
+  const data = getChartData();
+  if (state.chart.graphMode === "barRace") return generateBarRaceNarration(data, mode);
+  if (data.points.length < 2 || data.series.length === 0) {
+    return "CSVを読み込むと、グラフの要点を自動で表示します。";
+  }
+  const metrics = getSeriesMetrics(data.points, data.series).filter(Boolean);
+  if (metrics.length === 0) {
+    return "選択された期間では、解説文を作成できる有効な数値が不足しています。";
+  }
+  const startYear = formatTimeLabel(data.points[0].label, data.points[0].time);
+  const endPoint = data.points[data.points.length - 1];
+  const endYear = formatTimeLabel(endPoint.label, endPoint.time);
+  if (mode !== "pro") {
+    const direction = metrics.some((item) => item.multiple >= 1) ? "上昇" : "変化";
+    return `${startYear}から${endYear}にかけて、選択された系列は長期的に${direction}しています。詳しい要因分析や系列間比較は課金版プレビューで確認できます。`;
+  }
+
+  const best = [...metrics].sort((a, b) => b.multiple - a.multiple)[0];
+  const slowest = [...metrics].sort((a, b) => a.multiple - b.multiple)[0];
+  const lead = metrics[0];
+  const parts = [
+    `${startYear}から${endYear}にかけて、${lead.name}は${formatValue(lead.firstValue)}から${formatValue(lead.lastValue)}へ変化しました。初年度比では約${formatNumber(lead.multiple)}倍、年平均成長率は約${formatNumber(lead.cagr)}%です。`,
+  ];
+  if (metrics.length > 1) {
+    parts.push(`複数系列の中では${best.name}の伸びが最も大きく、約${formatNumber(best.multiple)}倍でした。一方、伸びが最も小さいのは${slowest.name}で、約${formatNumber(slowest.multiple)}倍です。`);
+  }
+  if (lead.maxRise) parts.push(`${lead.name}の最大上昇は${formatTimeLabel(String(lead.maxRise.year), lead.maxRise.year)}で、前年差は${formatValue(lead.maxRise.diff)}でした。`);
+  if (lead.maxFall) parts.push(`最大下落は${formatTimeLabel(String(lead.maxFall.year), lead.maxFall.year)}で、前年差は${formatValue(lead.maxFall.diff)}でした。`);
+  return parts.join("");
+}
+
+function generateBarRaceNarration(data, mode = state.plan) {
+  if (data.points.length < 2 || data.series.length < 2) {
+    return "バーチャートレースには複数の数値系列が必要です。";
+  }
+  const firstRanks = getBarRaceRanksForPoint(data.points[0], data.series);
+  const lastPoint = data.points[data.points.length - 1];
+  const lastRanks = getBarRaceRanksForPoint(lastPoint, data.series);
+  if (firstRanks.length === 0 || lastRanks.length === 0) return "表示できるランキングデータがありません。";
+  if (mode !== "pro") {
+    return "期間中、各系列の順位が変化し、上位の構成が変わっています。詳細な順位変動や成長率の分析は課金版プレビューで確認できます。";
+  }
+  const firstTop = firstRanks[0];
+  const lastTop = lastRanks[0];
+  const lastTop3 = lastRanks.slice(0, 3).map((item) => item.name).join("、");
+  const firstMap = new Map(firstRanks.map((item, index) => [item.column, index + 1]));
+  const lastMap = new Map(lastRanks.map((item, index) => [item.column, index + 1]));
+  const movements = data.series.map((item) => ({
+    name: item.name,
+    move: (firstMap.get(item.column) || data.series.length + 1) - (lastMap.get(item.column) || data.series.length + 1),
+  }));
+  const up = movements.reduce((a, b) => (b.move > a.move ? b : a), movements[0]);
+  const down = movements.reduce((a, b) => (b.move < a.move ? b : a), movements[0]);
+  const growth = data.series.map((item) => {
+    const first = data.points[0].values[item.column];
+    const last = lastPoint.values[item.column];
+    return { name: item.name, rate: first > 0 && Number.isFinite(last) ? last / first : 0 };
+  }).sort((a, b) => b.rate - a.rate)[0];
+  const gap = lastRanks[1] ? lastTop.value - lastRanks[1].value : 0;
+  return `${formatTimeLabel(data.points[0].label, data.points[0].time)}時点では${firstTop.name}が1位でした。最終時点では${lastTop.name}が1位で、上位3系列は${lastTop3}です。期間中に最も順位を上げたのは${up.name}、最も順位を下げたのは${down.name}です。最大成長率は${growth.name}で、最終時点の首位と2位の差は${formatBarRaceValue(gap)}です。`;
+}
+
+function getBarRaceRanksForPoint(point, series) {
+  const orderFactor = state.chart.barSortOrder === "asc" ? 1 : -1;
+  return series
+    .map((item) => ({
+      column: item.column,
+      name: item.name,
+      value: normalizeBarRaceValue(point.values[item.column]),
+    }))
+    .filter((row) => shouldShowBarRaceValue(row.value))
+    .sort((a, b) => (a.value - b.value) * orderFactor);
+}
+
+function getSeriesMetrics(points, series) {
+  return series.map((item) => {
+    const valid = points
+      .map((point) => ({ time: point.time, label: point.label, value: point.values[item.column] }))
+      .filter((point) => Number.isFinite(point.value));
+    if (valid.length < 2) return null;
+    const first = valid[0];
+    const last = valid[valid.length - 1];
+    const years = Math.max(1, last.time - first.time);
+    const multiple = first.value !== 0 ? last.value / first.value : 0;
+    const cagr = first.value > 0 && last.value > 0 ? (multiple ** (1 / years) - 1) * 100 : 0;
+    const max = valid.reduce((a, b) => (b.value > a.value ? b : a), valid[0]);
+    const min = valid.reduce((a, b) => (b.value < a.value ? b : a), valid[0]);
+    let maxRise = null;
+    let maxFall = null;
+    for (let index = 1; index < valid.length; index += 1) {
+      const diff = valid[index].value - valid[index - 1].value;
+      if (!maxRise || diff > maxRise.diff) maxRise = { year: valid[index].time, diff };
+      if (!maxFall || diff < maxFall.diff) maxFall = { year: valid[index].time, diff };
+    }
+    return {
+      name: item.name,
+      firstValue: first.value,
+      lastValue: last.value,
+      multiple,
+      cagr,
+      max,
+      min,
+      maxRise,
+      maxFall,
+    };
+  });
+}
+
+async function copyNarration() {
+  const text = els.narrationText.textContent || "";
+  try {
+    await navigator.clipboard.writeText(text);
+    showNotice("解説文をコピーしました。");
+  } catch {
+    showNotice("コピーできませんでした。ブラウザの権限を確認してください。");
+  }
 }
 
 function buildTable(visibleRows) {
@@ -821,8 +1560,14 @@ function exportCsv() {
 
 function updateButtons() {
   const hasData = state.headers.length > 0;
-  const hasChart = hasData && getChartData().points.length >= 2 && getSeriesConfig().length > 0;
+  const data = getChartData();
+  const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
+  const hasChart = hasData && data.points.length >= 2 && data.series.length >= minSeries;
   const busy = state.chart.isRecording;
+  const pngLabel = isProPlan() ? "PNG保存（1080p・透かしなし）" : "PNG保存（720p・透かしあり）";
+  const webmLabel = isProPlan()
+    ? "動画保存（WebM・1080p・透かしなし）"
+    : "動画保存（WebM・720p・透かしあり）";
   els.exportButton.disabled = !hasData || busy;
   els.addRowButton.disabled = !hasData || busy;
   els.addColumnButton.disabled = !hasData || busy;
@@ -832,7 +1577,15 @@ function updateButtons() {
   els.recordChartButton.disabled = !hasChart || busy || !canRecordCanvas();
   if (els.savePngButton) els.savePngButton.disabled = !hasChart || busy;
   els.savePngTopButton.disabled = !hasChart || busy;
-  els.recordChartButton.textContent = busy ? "録画中" : "動画保存（WebM）";
+  els.savePngTopButton.textContent = "PNG保存";
+  els.savePngTopButton.title = pngLabel;
+  els.savePngTopButton.setAttribute("aria-label", pngLabel);
+  els.recordChartButton.textContent = busy
+    ? "録画中"
+    : "動画保存";
+  els.recordChartButton.title = webmLabel;
+  els.recordChartButton.setAttribute("aria-label", webmLabel);
+  els.batchExportButton.disabled = busy;
 }
 
 function guessChartColumns() {
@@ -847,7 +1600,10 @@ function guessChartColumns() {
     .map((_, columnIndex) => columnIndex)
     .filter((columnIndex) => columnIndex !== state.chart.timeColumn)
     .filter((columnIndex) => state.rows.some((row) => parseNumber(row[columnIndex]) !== null));
-  state.chart.valueColumns = numericColumns.slice(0, Math.max(1, Math.min(3, numericColumns.length)));
+  const defaultCount = state.chart.graphMode === "barRace"
+    ? Math.min(getBarRaceTopLimit(), numericColumns.length)
+    : Math.max(1, Math.min(3, numericColumns.length));
+  state.chart.valueColumns = numericColumns.slice(0, defaultCount);
 }
 
 function renderChartControls() {
@@ -981,7 +1737,8 @@ function getSeriesConfig() {
 
 function renderChart() {
   const data = getChartData();
-  const hasChart = data.points.length >= 2 && data.series.length > 0;
+  const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
+  const hasChart = data.points.length >= 2 && data.series.length >= minSeries;
   els.chartEmpty.hidden = hasChart;
   els.chartPanel.hidden = !hasChart;
   els.chartTitle.textContent = state.chart.title;
@@ -992,11 +1749,15 @@ function renderChart() {
   if (!hasChart) {
     stopChart();
     clearCanvasHover();
+    if (state.chart.graphMode === "barRace" && state.headers.length > 0 && data.series.length < 2) {
+      showNotice("バーチャートレースには複数の数値系列が必要です。");
+    }
     return;
   }
 
   state.chart.progress = Math.min(1, Math.max(state.chart.progress, 1));
   drawChart(data, state.chart.progress);
+  renderNarration();
 }
 
 function hasNonPositiveValues(points, series) {
@@ -1131,9 +1892,10 @@ function playChartAnimation() {
   return runChartAnimation();
 }
 
-function runChartAnimation({ onComplete } = {}) {
+function runChartAnimation({ onComplete, exportSize } = {}) {
   const data = getChartData();
-  if (data.points.length < 2 || data.series.length === 0) {
+  const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
+  if (data.points.length < 2 || data.series.length < minSeries) {
     renderChart();
     return Promise.resolve(false);
   }
@@ -1145,13 +1907,13 @@ function runChartAnimation({ onComplete } = {}) {
   const startHold = Number(state.chart.startHold || 0) * 1000;
   const endHold = Number(state.chart.endHold || 0) * 1000;
   const speedAdjusted = Math.max(1200, totalDuration - startHold - endHold) / Number(els.speedRange.value || 1);
-  drawChart(data, 0);
+  drawChart(data, 0, { exportSize });
 
   return new Promise((resolve) => {
     const step = (now) => {
       const elapsed = now - state.chart.startedAt;
       state.chart.progress = clamp((elapsed - startHold) / speedAdjusted, 0, 1);
-      drawChart(data, state.chart.progress);
+      drawChart(data, state.chart.progress, { exportSize });
       if (elapsed < startHold + speedAdjusted + endHold) {
         state.chart.animationId = requestAnimationFrame(step);
         return;
@@ -1165,15 +1927,27 @@ function runChartAnimation({ onComplete } = {}) {
   });
 }
 
-async function recordChartAnimation() {
+async function recordChartAnimation(options = {}) {
   if (state.chart.isRecording) return;
   if (!canRecordCanvas()) {
     alert("このブラウザはCanvas録画に対応していません。ChromeまたはEdgeでお試しください。");
     return;
   }
 
+  const originalRatio = state.chart.aspectRatio;
+  if (options.aspectRatio) {
+    state.chart.aspectRatio = options.aspectRatio;
+    els.aspectRatioSelect.value = options.aspectRatio;
+  }
   const data = getChartData();
-  if (data.points.length < 2 || data.series.length === 0) return;
+  const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
+  if (data.points.length < 2 || data.series.length < minSeries) {
+    if (options.aspectRatio) {
+      state.chart.aspectRatio = originalRatio;
+      els.aspectRatioSelect.value = originalRatio;
+    }
+    return;
+  }
   if (state.mode !== "chart") {
     state.mode = "chart";
     render();
@@ -1186,6 +1960,8 @@ async function recordChartAnimation() {
 
   let stream;
   try {
+    const exportSize = getOutputCanvasSize();
+    drawChart(data, 0, { exportSize });
     stream = els.canvas.captureStream(60);
     const chunks = [];
     const recorder = new MediaRecorder(stream, { mimeType: getSupportedWebmType() });
@@ -1200,6 +1976,7 @@ async function recordChartAnimation() {
 
     recorder.start();
     await runChartAnimation({
+      exportSize,
       onComplete: () => {
         setTimeout(() => recorder.stop(), 180);
       },
@@ -1213,7 +1990,12 @@ async function recordChartAnimation() {
   } finally {
     stream?.getTracks().forEach((track) => track.stop());
     state.chart.isRecording = false;
+    if (options.aspectRatio) {
+      state.chart.aspectRatio = originalRatio;
+      els.aspectRatioSelect.value = originalRatio;
+    }
     updateButtons();
+    renderChart();
   }
 }
 
@@ -1226,9 +2008,10 @@ function stopChart() {
 
 function savePng() {
   const data = getChartData();
-  if (data.points.length < 2 || data.series.length === 0) return;
+  const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
+  if (data.points.length < 2 || data.series.length < minSeries) return;
   clearCanvasHover();
-  drawChart(data, 1);
+  drawChart(data, 1, { exportSize: getOutputCanvasSize() });
   try {
     els.canvas.toBlob((blob) => {
       if (!blob) {
@@ -1236,33 +2019,59 @@ function savePng() {
         return;
       }
       downloadBlob(blob, getPngFileName());
+      renderChart();
     }, "image/png");
   } catch (error) {
     alert(`PNG保存に失敗しました。${error?.message || "ブラウザの保存機能を確認してください。"}`);
+    renderChart();
   }
 }
 
-function drawChart(data, progress) {
+async function batchExportMaterials() {
+  if (!isProPlan()) {
+    showNotice("資料セット出力は課金版機能です。課金版プレビューに切り替えると試せます。");
+    return;
+  }
+  const data = getChartData();
+  const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
+  if (data.points.length < 2 || data.series.length < minSeries) return;
+  const originalRatio = state.chart.aspectRatio;
+  const ratios = ["16:9", "1:1", "9:16"];
+  try {
+    ratios.forEach((ratio) => {
+      state.chart.aspectRatio = ratio;
+      drawChart(data, 1, { exportSize: getOutputCanvasSize() });
+      els.canvas.toBlob((blob) => {
+        if (blob) downloadBlob(blob, `${slugify(state.chart.title || "timeseries-chart")}-${ratio.replace(":", "x")}-${getDateStamp()}.png`);
+      }, "image/png");
+    });
+    const textBlob = new Blob([generateNarration("pro")], { type: "text/plain;charset=utf-8" });
+    downloadBlob(textBlob, `${slugify(state.chart.title || "timeseries-chart")}-commentary-${getDateStamp()}.txt`);
+    await recordChartAnimation({ aspectRatio: "16:9" });
+    await recordChartAnimation({ aspectRatio: "9:16" });
+    showNotice("資料セットを書き出しました。PNG、WebM、解説文テキストを個別ダウンロードします。");
+  } catch (error) {
+    showNotice(`資料セット出力に失敗しました。${error?.message || "ブラウザの保存機能を確認してください。"}`);
+  } finally {
+    state.chart.aspectRatio = originalRatio;
+    els.aspectRatioSelect.value = originalRatio;
+    renderChart();
+  }
+}
+
+function drawChart(data, progress, options = {}) {
   const { points, series } = data;
   if (points.length < 2 || series.length === 0) return;
   const safeProgress = clamp(progress, 0, 1);
 
   const canvas = els.canvas;
-  const frameWidth = canvas.parentElement?.clientWidth || 900;
-  const ratioValue = getAspectRatioValue();
-  let cssWidth = Math.max(360, Math.min(1280, frameWidth));
-  let cssHeight = Math.round(cssWidth / ratioValue);
-  if (state.chart.aspectRatio === "9:16") {
-    cssHeight = Math.min(820, Math.max(560, cssHeight));
-    cssWidth = Math.round(cssHeight * ratioValue);
-  }
-  if (state.chart.aspectRatio === "1:1") {
-    cssWidth = Math.min(cssWidth, 760);
-    cssHeight = cssWidth;
-  }
-  const ratio = window.devicePixelRatio || 1;
-  canvas.style.width = `${cssWidth}px`;
-  canvas.style.height = `${cssHeight}px`;
+  const previewSize = getPreviewCanvasSize(canvas);
+  const exportSize = options.exportSize || null;
+  const cssWidth = exportSize?.width || previewSize.width;
+  const cssHeight = exportSize?.height || previewSize.height;
+  const ratio = exportSize ? 1 : window.devicePixelRatio || 1;
+  canvas.style.width = `${previewSize.width}px`;
+  canvas.style.height = `${previewSize.height}px`;
   canvas.width = Math.round(cssWidth * ratio);
   canvas.height = Math.round(cssHeight * ratio);
 
@@ -1274,7 +2083,19 @@ function drawChart(data, progress) {
   ctx.fillStyle = colors.background;
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-  const padding = { top: 92, right: 42, bottom: 78, left: 86 };
+  if (state.chart.graphMode === "barRace") {
+    drawBarChartRace(ctx, { cssWidth, cssHeight, points, series, progress: safeProgress, colors, exportSize: options.exportSize });
+    if (options.exportSize && isProPlan() && state.chart.includeNarrationInPng) {
+      drawNarrationOnCanvas(ctx, { cssWidth, cssHeight, padding: { left: 56 }, colors });
+    }
+    if (!isProPlan()) drawWatermark(ctx, { cssWidth, cssHeight, colors });
+    const latest = getVisiblePoint(points, safeProgress);
+    els.chartCurrent.textContent = `${formatTimeLabel(latest.label, latest.time)} / Top ${Math.min(state.chart.barTopN, series.length)}`;
+    return;
+  }
+
+  const header = getCanvasHeaderLayout(ctx, cssWidth, series, points);
+  const padding = { top: header.plotTop, right: 42, bottom: 78, left: 86 };
   const plotWidth = cssWidth - padding.left - padding.right;
   const plotHeight = cssHeight - padding.top - padding.bottom;
   const times = points.map((point) => point.time);
@@ -1292,28 +2113,307 @@ function drawChart(data, progress) {
     return padding.top + (1 - (value - scale.min) / (scale.max - scale.min || 1)) * plotHeight;
   };
 
-  drawChartFrame(ctx, { cssWidth, cssHeight, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors });
+  drawChartFrame(ctx, { cssWidth, cssHeight, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors, header });
   drawSeries(ctx, { points, series, xFor, yFor, progress: safeProgress, padding, plotWidth });
   drawHover(ctx, { points, series, xFor, yFor, padding, plotHeight, colors });
+  if (options.exportSize && isProPlan() && state.chart.includeNarrationInPng) {
+    drawNarrationOnCanvas(ctx, { cssWidth, cssHeight, padding, colors });
+  }
+  if (!isProPlan()) drawWatermark(ctx, { cssWidth, cssHeight, colors });
 
   const latest = getVisiblePoint(points, safeProgress);
   els.chartCurrent.textContent = `${formatTimeLabel(latest.label, latest.time)} / ${series.length}系列`;
   state.chart.layout = { padding, plotWidth, plotHeight, xFor, yFor, points, series, cssWidth, cssHeight };
 }
 
+function getPreviewCanvasSize(canvas) {
+  const frameWidth = canvas.parentElement?.clientWidth || 900;
+  const ratioValue = getAspectRatioValue();
+  let width = Math.max(320, Math.min(1280, frameWidth));
+  let height = Math.round(width / ratioValue);
+  if (state.chart.aspectRatio === "9:16") {
+    height = Math.min(820, Math.max(520, height));
+    width = Math.round(height * ratioValue);
+  }
+  if (state.chart.aspectRatio === "1:1") {
+    width = Math.min(width, 760);
+    height = width;
+  }
+  return { width, height };
+}
+
+function getOutputCanvasSize() {
+  if (isProPlan()) {
+    if (state.chart.aspectRatio === "1:1") return { width: 1080, height: 1080 };
+    if (state.chart.aspectRatio === "9:16") return { width: 1080, height: 1920 };
+    return { width: 1920, height: 1080 };
+  }
+  if (state.chart.aspectRatio === "1:1") return { width: 720, height: 720 };
+  if (state.chart.aspectRatio === "9:16") return { width: 720, height: 1280 };
+  return { width: 1280, height: 720 };
+}
+
+function drawWatermark(ctx, area) {
+  const text = "時系列データアニメーター";
+  ctx.save();
+  ctx.font = `700 ${Math.max(12, Math.round(area.cssWidth * 0.014))}px ${CANVAS_FONT}`;
+  ctx.textAlign = "right";
+  ctx.textBaseline = "bottom";
+  ctx.fillStyle = withAlpha(area.colors.text, 0.36);
+  ctx.fillText(text, area.cssWidth - 18, area.cssHeight - 14);
+  ctx.restore();
+}
+
+function drawNarrationOnCanvas(ctx, area) {
+  const text = generateNarration("pro");
+  if (!text) return;
+  const lines = wrapCanvasText(ctx, text, area.cssWidth - area.padding.left * 2, 2);
+  ctx.save();
+  ctx.font = `15px ${CANVAS_FONT}`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "bottom";
+  ctx.fillStyle = withAlpha(area.colors.text, 0.8);
+  lines.forEach((line, index) => {
+    ctx.fillText(line, area.padding.left, area.cssHeight - 42 + index * 18);
+  });
+  ctx.restore();
+}
+
+function wrapCanvasText(ctx, text, maxWidth, maxLines) {
+  const chars = [...text];
+  const lines = [];
+  let line = "";
+  chars.forEach((char) => {
+    const next = `${line}${char}`;
+    if (line && ctx.measureText(next).width > maxWidth) {
+      lines.push(line);
+      line = char;
+    } else {
+      line = next;
+    }
+  });
+  if (line) lines.push(line);
+  return lines.slice(0, maxLines).map((value, index) => {
+    if (index === maxLines - 1 && lines.length > maxLines) return `${value.slice(0, -1)}…`;
+    return value;
+  });
+}
+
+function drawBarChartRace(ctx, area) {
+  const frame = prepareBarChartRaceFrame(area.points, area.series, area.progress);
+  const { cssWidth, cssHeight, colors } = area;
+  if (frame.items.length === 0) {
+    showNotice("表示できるランキングデータがありません。");
+    return;
+  }
+
+  const margin = {
+    left: cssWidth < 760 ? 56 : 92,
+    right: cssWidth < 760 ? 54 : 120,
+    top: cssHeight < 720 ? 118 : 142,
+    bottom: 70,
+  };
+  const titleWidth = cssWidth - margin.left - margin.right;
+  ctx.fillStyle = colors.text;
+  ctx.font = `700 ${cssWidth < 760 ? 22 : 30}px ${CANVAS_FONT}`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText(truncateCanvasText(ctx, state.chart.title, titleWidth), margin.left, 28);
+  ctx.font = `14px ${CANVAS_FONT}`;
+  ctx.fillStyle = colors.muted;
+  ctx.fillText(truncateCanvasText(ctx, state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : ""), titleWidth), margin.left, 68);
+
+  drawBarRaceYear(ctx, frame.label, { cssWidth, cssHeight, margin, colors });
+
+  const maxRows = Math.min(state.chart.barTopN, frame.items.length);
+  if (state.chart.barTopN > maxRows && frame.items.length > 0) {
+    showNotice("表示件数が多すぎるため、自動で棒の高さを調整します。");
+  }
+  const availableHeight = cssHeight - margin.top - margin.bottom;
+  const gap = Math.max(5, Math.min(12, availableHeight / Math.max(1, maxRows) * 0.14));
+  const barHeight = Math.max(16, Math.min(42, (availableHeight - gap * (maxRows - 1)) / Math.max(1, maxRows)));
+  const nameWidth = cssWidth < 760 ? 96 : 150;
+  const rankWidth = state.chart.barRankLabels ? 34 : 0;
+  const barLeft = margin.left + rankWidth + nameWidth;
+  const maxBarWidth = Math.max(120, cssWidth - barLeft - margin.right);
+  const scaleMax = Math.max(1, state.chart.barScaleMode === "frame" ? frame.currentMax : frame.globalMax);
+  const radius = Math.min(10, barHeight / 2);
+  const hitItems = [];
+
+  frame.items.slice(0, maxRows).forEach((item, displayIndex) => {
+    const y = margin.top + item.y * (barHeight + gap);
+    const width = Math.max(2, Math.abs(item.value) / scaleMax * maxBarWidth);
+    const alpha = item.alpha ?? 1;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = `700 ${Math.max(12, Math.min(16, barHeight * 0.42))}px ${CANVAS_FONT}`;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "right";
+    ctx.fillStyle = colors.muted;
+    if (state.chart.barRankLabels) ctx.fillText(`${displayIndex + 1}`, margin.left + rankWidth - 10, y + barHeight / 2);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = colors.text;
+    ctx.fillText(truncateCanvasText(ctx, item.name, nameWidth - 12), margin.left + rankWidth, y + barHeight / 2);
+
+    ctx.fillStyle = item.color;
+    roundRect(ctx, barLeft, y, width, barHeight, radius);
+    ctx.fill();
+
+    if (state.chart.barValueLabels) {
+      ctx.font = `700 ${Math.max(12, Math.min(16, barHeight * 0.4))}px ${CANVAS_FONT}`;
+      ctx.fillStyle = colors.text;
+      ctx.textAlign = "left";
+      ctx.fillText(formatBarRaceValue(item.value), Math.min(barLeft + width + 10, cssWidth - margin.right + 4), y + barHeight / 2);
+    }
+    ctx.restore();
+    hitItems.push({ ...item, rank: displayIndex + 1, x: barLeft, y, width, height: barHeight });
+  });
+
+  ctx.font = `12px ${CANVAS_FONT}`;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "bottom";
+  ctx.fillStyle = colors.muted;
+  const footer = [state.chart.note, state.chart.source ? `出典: ${state.chart.source}` : ""].filter(Boolean).join(" / ");
+  if (footer) ctx.fillText(truncateCanvasText(ctx, footer, cssWidth - margin.left - margin.right), margin.left, cssHeight - 16);
+
+  state.chart.layout = {
+    graphMode: "barRace",
+    cssWidth,
+    cssHeight,
+    points: area.points,
+    series: area.series,
+    barItems: hitItems,
+    currentLabel: frame.label,
+  };
+}
+
+function prepareBarChartRaceFrame(points, series, progress) {
+  const visibleEnd = clamp(progress, 0, 1) * (points.length - 1);
+  const fromIndex = Math.floor(visibleEnd);
+  const toIndex = Math.min(points.length - 1, fromIndex + 1);
+  const partial = visibleEnd - fromIndex;
+  const from = points[fromIndex] || points[0];
+  const to = points[toIndex] || from;
+  const topLimit = Math.min(state.chart.barTopN, getBarRaceTopLimit(), series.length);
+  const orderFactor = state.chart.barSortOrder === "asc" ? 1 : -1;
+
+  const globalValues = [];
+  points.forEach((point) => {
+    series.forEach((item) => {
+      const value = point.values[item.column];
+      if (Number.isFinite(value)) globalValues.push(Math.abs(value));
+    });
+  });
+  const globalMax = Math.max(1, ...globalValues);
+
+  const rankAt = (point) => series
+    .map((item) => ({ item, value: normalizeBarRaceValue(point.values[item.column]) }))
+    .filter((row) => shouldShowBarRaceValue(row.value))
+    .sort((a, b) => (a.value - b.value) * orderFactor)
+    .map((row, index) => [row.item.column, index]);
+  const fromRanks = new Map(rankAt(from));
+  const toRanks = new Map(rankAt(to));
+
+  const rows = series
+    .map((item) => {
+      const startValue = normalizeBarRaceValue(from.values[item.column]);
+      const endValue = normalizeBarRaceValue(to.values[item.column]);
+      const value = startValue + (endValue - startValue) * partial;
+      if (!shouldShowBarRaceValue(value)) return null;
+      const startRank = fromRanks.has(item.column) ? fromRanks.get(item.column) : topLimit + 1;
+      const endRank = toRanks.has(item.column) ? toRanks.get(item.column) : topLimit + 1;
+      return {
+        column: item.column,
+        name: item.name,
+        color: item.color,
+        value,
+        y: startRank + (endRank - startRank) * partial,
+        alpha: startRank <= topLimit || endRank <= topLimit ? 1 : 0.35,
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => (a.value - b.value) * orderFactor);
+
+  const currentMax = Math.max(1, ...rows.map((row) => Math.abs(row.value)));
+  const label = formatInterpolatedTime(from, to, partial);
+  return { items: rows.slice(0, topLimit + 2), currentMax, globalMax, label };
+}
+
+function normalizeBarRaceValue(value) {
+  if (!Number.isFinite(value)) return 0;
+  if (!state.chart.barAllowNegative && value < 0) return 0;
+  return value;
+}
+
+function shouldShowBarRaceValue(value) {
+  if (!Number.isFinite(value)) return false;
+  if (state.chart.barShowZero) return true;
+  return value !== 0;
+}
+
+function formatInterpolatedTime(from, to, progress) {
+  const time = from.time + (to.time - from.time) * progress;
+  if (Number.isFinite(time) && Math.abs(time - Math.round(time)) < 0.08) return String(Math.round(time));
+  return formatTimeLabel(from.label, from.time);
+}
+
+function drawBarRaceYear(ctx, label, area) {
+  const { cssWidth, cssHeight, margin, colors } = area;
+  ctx.save();
+  ctx.font = `800 ${Math.max(44, Math.round(cssWidth * 0.09))}px ${CANVAS_FONT}`;
+  ctx.fillStyle = state.chart.barYearPosition === "center" ? withAlpha(colors.text, 0.12) : withAlpha(colors.text, 0.28);
+  ctx.textBaseline = "top";
+  if (state.chart.barYearPosition === "center") {
+    ctx.textAlign = "center";
+    ctx.fillText(label, cssWidth / 2, cssHeight * 0.42);
+  } else if (state.chart.barYearPosition === "bottomRight") {
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+    ctx.fillText(label, cssWidth - margin.right, cssHeight - margin.bottom + 6);
+  } else if (state.chart.barYearPosition === "topLeft") {
+    ctx.textAlign = "left";
+    ctx.fillText(label, margin.left, 92);
+  } else {
+    ctx.textAlign = "right";
+    ctx.fillText(label, cssWidth - margin.right, 86);
+  }
+  ctx.restore();
+}
+
+function formatBarRaceValue(value) {
+  const digits = state.chart.barDecimalPlaces;
+  return `${Number(value).toLocaleString("ja-JP", { minimumFractionDigits: digits, maximumFractionDigits: digits })}${state.chart.unit ? state.chart.unit : ""}`;
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  const r = Math.min(radius, Math.abs(width) / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + width - r, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+  ctx.lineTo(x + width, y + height - r);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+  ctx.lineTo(x + r, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
 function drawChartFrame(ctx, area) {
-  const { cssWidth, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors } = area;
+  const { cssWidth, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors, header } = area;
   ctx.fillStyle = colors.text;
   ctx.font = `700 24px ${CANVAS_FONT}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(state.chart.title, padding.left, 24);
+  ctx.fillText(truncateCanvasText(ctx, state.chart.title, plotWidth), padding.left, 24);
 
   ctx.font = `13px ${CANVAS_FONT}`;
   ctx.fillStyle = colors.muted;
-  ctx.fillText(state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : ""), padding.left, 56);
+  ctx.fillText(truncateCanvasText(ctx, state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : ""), plotWidth), padding.left, 56);
 
-  drawLegend(ctx, series, cssWidth, padding, colors);
+  drawLegend(ctx, series, cssWidth, padding, colors, header.legendY);
 
   ctx.strokeStyle = colors.axis;
   ctx.lineWidth = 1;
@@ -1367,16 +2467,53 @@ function drawChartFrame(ctx, area) {
   const footer = [state.chart.note, state.chart.source ? `出典: ${state.chart.source}` : ""].filter(Boolean).join(" / ");
   if (footer) ctx.fillText(footer, padding.left, area.cssHeight - 14);
 
-  if (state.chart.showGrowth) drawGrowthSummary(ctx, area);
+  if (state.chart.showGrowth) drawGrowthSummary(ctx, area, header.growthRows, header.growthY);
 }
 
-function drawLegend(ctx, series, cssWidth, padding, colors) {
-  let x = padding.left + 260;
-  let y = 30;
+function getCanvasHeaderLayout(ctx, cssWidth, series, points) {
+  const paddingLeft = 86;
+  const paddingRight = 42;
+  const plotWidth = cssWidth - paddingLeft - paddingRight;
+  const legendY = 80;
+  const legendRows = Math.max(1, countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight));
+  const growthRows = state.chart.showGrowth ? getGrowthSummaryRows(points, series).slice(0, 3) : [];
+  const growthY = legendY + legendRows * 22 + 8;
+  const plotTop = Math.max(118, growthY + growthRows.length * 17 + 20);
+  return { legendY, legendRows, growthY, growthRows, plotTop, plotWidth };
+}
+
+function countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight) {
+  let rows = 1;
+  let x = paddingLeft;
   ctx.font = `12px ${CANVAS_FONT}`;
   series.forEach((item) => {
     const width = Math.min(180, ctx.measureText(item.name).width + 34);
-    if (x + width > cssWidth - padding.right) {
+    if (x > paddingLeft && x + width > cssWidth - paddingRight) {
+      rows += 1;
+      x = paddingLeft;
+    }
+    x += width + 16;
+  });
+  return rows;
+}
+
+function truncateCanvasText(ctx, text, maxWidth) {
+  const value = text || "";
+  if (ctx.measureText(value).width <= maxWidth) return value;
+  let clipped = value;
+  while (clipped.length > 1 && ctx.measureText(`${clipped}...`).width > maxWidth) {
+    clipped = clipped.slice(0, -1);
+  }
+  return `${clipped}...`;
+}
+
+function drawLegend(ctx, series, cssWidth, padding, colors, startY) {
+  let x = padding.left;
+  let y = startY;
+  ctx.font = `12px ${CANVAS_FONT}`;
+  series.forEach((item) => {
+    const width = Math.min(180, ctx.measureText(item.name).width + 34);
+    if (x > padding.left && x + width > cssWidth - padding.right) {
       x = padding.left;
       y += 22;
     }
@@ -1514,8 +2651,7 @@ function drawEndLabels(ctx, area) {
   });
 }
 
-function drawGrowthSummary(ctx, area) {
-  const { points, series, padding, colors } = area;
+function getGrowthSummaryRows(points, series) {
   const rows = series.map((item) => {
     const valid = points.filter((point) => Number.isFinite(point.values[item.column]) && point.values[item.column] > 0);
     if (valid.length < 2) return null;
@@ -1526,6 +2662,11 @@ function drawGrowthSummary(ctx, area) {
     const cagr = (multiple ** (1 / years) - 1) * 100;
     return `${item.name}: ${formatNumber(multiple)}倍 / 年平均${formatNumber(cagr)}%`;
   }).filter(Boolean);
+  return rows;
+}
+
+function drawGrowthSummary(ctx, area, rows, startY) {
+  const { padding, plotWidth, colors } = area;
 
   if (rows.length === 0) return;
   ctx.font = `12px ${CANVAS_FONT}`;
@@ -1533,7 +2674,7 @@ function drawGrowthSummary(ctx, area) {
   ctx.textBaseline = "top";
   ctx.fillStyle = colors.muted;
   rows.slice(0, 3).forEach((row, index) => {
-    ctx.fillText(row, padding.left, 72 + index * 17);
+    ctx.fillText(truncateCanvasText(ctx, row, plotWidth), padding.left, startY + index * 17);
   });
 }
 
@@ -1610,6 +2751,21 @@ function handleCanvasHover(event) {
   const rect = els.canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
+  if (layout.graphMode === "barRace") {
+    const scaleX = layout.cssWidth / rect.width;
+    const scaleY = layout.cssHeight / rect.height;
+    const canvasX = x * scaleX;
+    const canvasY = y * scaleY;
+    const hit = layout.barItems?.find((item) =>
+      canvasX >= item.x && canvasX <= item.x + item.width && canvasY >= item.y && canvasY <= item.y + item.height
+    );
+    if (!hit) {
+      clearCanvasHover();
+      return;
+    }
+    showBarRaceTooltip(event, hit, layout.currentLabel);
+    return;
+  }
   const { padding, plotWidth, plotHeight, points } = layout;
 
   if (x < padding.left || x > padding.left + plotWidth || y < padding.top || y > padding.top + plotHeight) {
@@ -1630,6 +2786,18 @@ function handleCanvasHover(event) {
   state.chart.hoverIndex = nearestIndex;
   drawChart(getChartData(), state.chart.progress);
   showTooltip(event, points[nearestIndex], layout.series);
+}
+
+function showBarRaceTooltip(event, item, label) {
+  els.chartTooltip.innerHTML = `
+    <strong>${escapeHtml(label)}</strong>
+    <div><span style="background:${item.color}"></span>${item.rank}位: ${escapeHtml(item.name)}</div>
+    <div>${escapeHtml(formatBarRaceValue(item.value))}</div>
+  `;
+  els.chartTooltip.hidden = false;
+  const frameRect = els.canvas.parentElement.getBoundingClientRect();
+  els.chartTooltip.style.left = `${Math.min(event.clientX - frameRect.left + 14, frameRect.width - 260)}px`;
+  els.chartTooltip.style.top = `${Math.min(event.clientY - frameRect.top + 14, frameRect.height - 120)}px`;
 }
 
 function showTooltip(event, point, series) {
