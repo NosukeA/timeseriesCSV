@@ -42,12 +42,28 @@
         </header>
         <div id="planNotice" class="plan-notice">無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。</div>
         <div id="toast" class="toast" hidden></div>
+        <div id="sampleSuggestionPanel" class="sample-suggestion-panel" hidden>
+          <div>
+            <strong>おすすめサンプル</strong>
+            <p>別の見え方もすぐ試せます。</p>
+          </div>
+          <button type="button" data-sample-key="companySales">会社売上推移</button>
+          <button type="button" data-sample-key="snsFollowers">SNSフォロワー推移</button>
+          <button type="button" data-sample-key="raceYoutubeViews">YouTube再生数ランキング</button>
+          <button id="sampleSuggestionCloseButton" type="button" aria-label="おすすめを閉じる">×</button>
+        </div>
         <div id="guideOverlay" class="guide-overlay" hidden></div>
         <div id="guideHighlight" class="guide-highlight" hidden></div>
         <section id="guideCard" class="guide-card" aria-live="polite" hidden>
           <button id="guideCloseButton" class="guide-close" type="button" aria-label="ガイドを閉じる">×</button>
           <span id="guideStepLabel" class="guide-step-label"></span>
           <p id="guideText"></p>
+          <div id="guideRecommendations" class="sample-suggestions" hidden>
+            <strong>おすすめサンプル</strong>
+            <button type="button" data-sample-key="companySales">会社売上推移</button>
+            <button type="button" data-sample-key="snsFollowers">SNSフォロワー推移</button>
+            <button type="button" data-sample-key="raceYoutubeViews">YouTube再生数ランキング</button>
+          </div>
           <div class="guide-actions">
             <button id="guideSampleButton" class="primary" type="button" hidden>サンプルで試す</button>
             <label id="guideImportButton" class="button" hidden>
@@ -151,24 +167,22 @@
                 <span>テーマ</span>
                 <select id="themeSelect">
                   <option value="presentation">白背景プレゼン</option>
-                  <option value="dark">ダークSNS</option>
-                  <option value="newspaper">経済レポート</option>
-                  <option value="youtube">YouTube解説風 Pro</option>
-                  <option value="article">新聞記事風 Pro</option>
-                  <option value="finance">金融レポート風 Pro</option>
-                  <option value="classroom">授業スライド風 Pro</option>
-                  <option value="ir">企業IR風 Pro</option>
-                  <option value="verticalSns">SNS縦動画風 Pro</option>
-                  <option value="luxury">ミニマル高級感 Pro</option>
+                  <option value="dark">黒ベース</option>
+                  <option value="newspaper">ベージュベース</option>
+                  <option value="classroom">青ベース</option>
+                  <option value="youtube">赤ベース</option>
+                  <option value="ir">緑ベース</option>
+                  <option value="verticalSns">紫ベース</option>
+                  <option value="luxury">金ベース</option>
                 </select>
               </label>
-              <p id="themeLockHint" class="hint">Pro表示のテンプレートは課金版プレビューで利用できます。</p>
+              <p id="themeLockHint" class="hint">色ベースのデザインは無料版でも選べます。出力品質と透かしは利用モードに応じて変わります。</p>
               <label>
                 <span>出力比率</span>
                 <select id="aspectRatioSelect">
                   <option value="16:9">16:9</option>
                   <option value="1:1">1:1</option>
-                  <option value="9:16">9:16</option>
+                  <option value="4:3">4:3</option>
                 </select>
               </label>
               <div class="color-grid">
@@ -260,12 +274,28 @@
                   <option value="auto">自動調整</option>
                 </select>
               </label>
+              <label>
+                <span>X軸</span>
+                <select id="xAxisModeSelect">
+                  <option value="fixed">全期間固定</option>
+                  <option value="progressive">進行に合わせる</option>
+                </select>
+              </label>
+              <p class="hint"><img class="crown-mark" src="assets/pro-crown-gold.png" alt="">「進行に合わせる」は課金版プレビューで利用できます。</p>
+              <label>
+                <span>倍率表示</span>
+                <select id="growthPositionSelect">
+                  <option value="topRight">右上カード</option>
+                  <option value="bottom">グラフ下部</option>
+                </select>
+              </label>
               <label class="check-row standalone-check">
                 <input id="logScaleInput" type="checkbox">
                 <span>対数スケールにする</span>
               </label>
               <p id="logWarning" class="warning" hidden>対数スケールは0以下の値を表示できません。該当する値はグラフから除外されます。</p>
               <p id="indexWarning" class="warning" hidden>初年度=100にできない系列があります。初年度の値が0または欠損の系列は除外されます。</p>
+              <p id="scaleSuggestion" class="warning info-warning" hidden>伸び率で比較したい場合は『初年度=100』を使うと見やすくなります。</p>
               <p class="hint">対数スケールは、長期間で大きく伸びるデータを見やすくします。</p>
               <div class="range-grid">
                 <label>
@@ -298,6 +328,10 @@
                 <input id="showGrowthInput" type="checkbox" checked>
                 <span>倍率・年平均成長率を表示</span>
               </label>
+              <label class="check-row standalone-check">
+                <input id="squareHideLegendInput" type="checkbox" checked>
+                <span>1:1では右端ラベル表示時に凡例を隠す</span>
+              </label>
             </details>
 
             <details class="panel-section">
@@ -308,12 +342,9 @@
               </label>
               <label>
                 <span>動画時間</span>
-                <select id="videoDurationSelect">
-                  <option value="10">10秒</option>
-                  <option value="15">15秒</option>
-                  <option value="30">30秒</option>
-                </select>
+                <input id="videoDurationInput" type="number" min="3" max="120" step="1" value="10">
               </label>
+              <p id="videoDurationHint" class="hint">WebM保存時は10秒で書き出します。</p>
               <div class="range-grid">
                 <label>
                   <span>開始時停止</span>
@@ -331,18 +362,22 @@
               <p id="qualityLabel" class="quality-label">無料版：720p / 透かしあり</p>
               <label class="check-row standalone-check pro-only-control">
                 <input id="includeNarrationInput" type="checkbox">
-                <span>解説文をPNGに含める <small>Pro</small></span>
+                <span>解説文をPNGに含める <small class="crown-badge"><img class="crown-mark" src="assets/pro-crown-gold.png" alt=""></small></span>
               </label>
-              <button id="batchExportButton" type="button">資料セットを書き出す <span class="pro-pill">Pro</span></button>
+              <label class="check-row standalone-check pro-only-control">
+                <input id="squareShortNarrationInput" type="checkbox" checked>
+                <span>1:1・4:3 PNGでは短い一言コメントにする <small class="crown-badge"><img class="crown-mark" src="assets/pro-crown-gold.png" alt=""></small></span>
+              </label>
+              <button id="batchExportButton" type="button">資料セットを書き出す <span class="pro-pill"><img class="crown-mark" src="assets/pro-crown-gold.png" alt=""></span></button>
               <button id="comparePlansButton" type="button">無料版と課金版の違いを見る</button>
               <div id="planCompare" class="plan-compare" hidden>
                 <div>
                   <strong>無料版</strong>
-                  <p>720p / 透かしあり / 基本テーマ / PNG保存 / WebM保存 / 簡易解説文</p>
+                  <p>720p / 透かしあり / 色ベースデザイン / PNG保存 / WebM保存 / 簡易解説文</p>
                 </div>
                 <div>
                   <strong>課金版プレビュー</strong>
-                  <p>1080p / 透かしなし / 追加テンプレート / 高画質PNG・WebM / 詳細解説文 / 資料セット一括出力 / 商用利用OK</p>
+                  <p>1080p / 透かしなし / 色ベースデザイン / 高画質PNG・WebM / 詳細解説文 / 資料セット一括出力 / 商用利用OK</p>
                 </div>
                 <p class="price-note">課金版想定：透かしなし出力 300円 / 買い切り 980円。現在は課金テスト中です。</p>
               </div>
@@ -364,11 +399,19 @@
 2020,100,120,90
 2021,108,126,105
 2022,114,132,123</code></pre>
+                <div class="csv-example-actions">
+                  <button id="copyLineExampleButton" type="button">このCSVをコピー</button>
+                  <button id="tryLineExampleButton" type="button">この例で試す</button>
+                </div>
                 <strong>バーチャートレース用CSV</strong>
                 <pre><code>year,A社,B社,C社,D社
 2020,300,260,180,120
 2021,340,290,240,160
 2022,410,310,330,220</code></pre>
+                <div class="csv-example-actions">
+                  <button id="copyBarExampleButton" type="button">このCSVをコピー</button>
+                  <button id="tryBarExampleButton" type="button">この例で試す</button>
+                </div>
               </div>
             </details>
           </aside>

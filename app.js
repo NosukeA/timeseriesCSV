@@ -2,14 +2,31 @@ const CANVAS_FONT = '"Yu Gothic", "Meiryo", "Noto Sans JP", "Segoe UI", sans-ser
 const DEFAULT_COLORS = ["#0f766e", "#2563eb", "#c2410c", "#7c3aed", "#be123c", "#15803d", "#a16207", "#0369a1"];
 const PLAN_STORAGE_KEY = "timecsv-plan-mode";
 const GUIDE_STORAGE_KEY = "timeseries-guide-seen";
+const GUIDE_EVENT_STORAGE_KEY = "timeseries-guide-events";
 const GUIDE_SAMPLE_KEY = "raceCountryGdp";
+const GUIDE_EVENT_NAMES = new Set([
+  "tour_started",
+  "tour_completed",
+  "tour_skipped",
+  "sample_opened_after_tour",
+  "animation_played_after_tour",
+  "export_clicked_after_tour",
+]);
+const CSV_EXAMPLES = {
+  line: `year,日本,米国,中国
+2020,100,120,90
+2021,108,126,105
+2022,114,132,123`,
+  barRace: `year,A社,B社,C社,D社
+2020,300,260,180,120
+2021,340,290,240,160
+2022,410,310,330,220`,
+};
 const FEATURE_FLAGS = {
   barChartRaceFree: true,
   barChartRaceMaxItemsFree: 10,
   barChartRaceMaxItemsPro: 20,
 };
-const FREE_THEME_KEYS = ["presentation", "dark", "newspaper"];
-const PRO_THEME_KEYS = ["youtube", "article", "finance", "classroom", "ir", "verticalSns", "luxury"];
 const THEMES = {
   presentation: {
     appBackground: "#eef5f8",
@@ -653,6 +670,8 @@ const state = {
     subtitle: "",
     xAxisName: "年",
     yAxisName: "値",
+    xAxisMode: "fixed",
+    growthPosition: "topRight",
     unit: "",
     note: "",
     source: "",
@@ -663,7 +682,9 @@ const state = {
     showEndLabels: true,
     showGrowth: true,
     showPoints: true,
+    squareHideLegendWithEndLabels: true,
     includeNarrationInPng: false,
+    squareShortNarration: true,
     barTopN: 10,
     barSortOrder: "desc",
     barScaleMode: "global",
@@ -731,15 +752,19 @@ const els = {
   noteInput: document.querySelector("#noteInput"),
   sourceInput: document.querySelector("#sourceInput"),
   yModeSelect: document.querySelector("#yModeSelect"),
+  xAxisModeSelect: document.querySelector("#xAxisModeSelect"),
+  growthPositionSelect: document.querySelector("#growthPositionSelect"),
   logScaleInput: document.querySelector("#logScaleInput"),
   logWarning: document.querySelector("#logWarning"),
   indexWarning: document.querySelector("#indexWarning"),
+  scaleSuggestion: document.querySelector("#scaleSuggestion"),
   startPeriodInput: document.querySelector("#startPeriodInput"),
   endPeriodInput: document.querySelector("#endPeriodInput"),
   missingModeSelect: document.querySelector("#missingModeSelect"),
   indexBaseInput: document.querySelector("#indexBaseInput"),
   showEndLabelsInput: document.querySelector("#showEndLabelsInput"),
   showGrowthInput: document.querySelector("#showGrowthInput"),
+  squareHideLegendInput: document.querySelector("#squareHideLegendInput"),
   showPointsInput: document.querySelector("#showPointsInput"),
   themeSelect: document.querySelector("#themeSelect"),
   aspectRatioSelect: document.querySelector("#aspectRatioSelect"),
@@ -753,6 +778,7 @@ const els = {
   savePngButton: document.querySelector("#savePngButton"),
   qualityLabel: document.querySelector("#qualityLabel"),
   includeNarrationInput: document.querySelector("#includeNarrationInput"),
+  squareShortNarrationInput: document.querySelector("#squareShortNarrationInput"),
   batchExportButton: document.querySelector("#batchExportButton"),
   comparePlansButton: document.querySelector("#comparePlansButton"),
   planCompare: document.querySelector("#planCompare"),
@@ -769,7 +795,8 @@ const els = {
   narrationText: document.querySelector("#narrationText"),
   narrationModeBadge: document.querySelector("#narrationModeBadge"),
   copyNarrationButton: document.querySelector("#copyNarrationButton"),
-  videoDurationSelect: document.querySelector("#videoDurationSelect"),
+  videoDurationInput: document.querySelector("#videoDurationInput"),
+  videoDurationHint: document.querySelector("#videoDurationHint"),
   startHoldInput: document.querySelector("#startHoldInput"),
   endHoldInput: document.querySelector("#endHoldInput"),
   diagnosticsPanel: document.querySelector("#diagnosticsPanel"),
@@ -790,6 +817,13 @@ const els = {
   showCsvExampleButton: document.querySelector("#showCsvExampleButton"),
   csvExamplePanel: document.querySelector("#csvExamplePanel"),
   useSampleHelpButton: document.querySelector("#useSampleHelpButton"),
+  guideRecommendations: document.querySelector("#guideRecommendations"),
+  sampleSuggestionPanel: document.querySelector("#sampleSuggestionPanel"),
+  sampleSuggestionCloseButton: document.querySelector("#sampleSuggestionCloseButton"),
+  copyLineExampleButton: document.querySelector("#copyLineExampleButton"),
+  tryLineExampleButton: document.querySelector("#tryLineExampleButton"),
+  copyBarExampleButton: document.querySelector("#copyBarExampleButton"),
+  tryBarExampleButton: document.querySelector("#tryBarExampleButton"),
 };
 
 const guideState = {
@@ -866,7 +900,10 @@ els.chartModeButton.addEventListener("click", () => setMode("chart"));
 els.addRowButton.addEventListener("click", addRow);
 els.addColumnButton.addEventListener("click", addColumn);
 els.deleteSelectedButton.addEventListener("click", deleteSelectedRows);
-els.playChartButton.addEventListener("click", () => playChartAnimation());
+els.playChartButton.addEventListener("click", () => {
+  trackAnimationAfterTour();
+  playChartAnimation();
+});
 els.recordChartButton.addEventListener("click", recordChartAnimation);
 els.savePngTopButton.addEventListener("click", savePng);
 els.savePngButton?.addEventListener("click", savePng);
@@ -890,6 +927,21 @@ els.noteInput.addEventListener("input", syncChartText);
 els.sourceInput.addEventListener("input", syncChartText);
 els.yModeSelect.addEventListener("change", () => {
   state.chart.yMode = els.yModeSelect.value;
+  renderChart();
+});
+els.xAxisModeSelect.addEventListener("change", () => {
+  if (els.xAxisModeSelect.value === "progressive" && !isProPlan()) {
+    els.xAxisModeSelect.value = "fixed";
+    state.chart.xAxisMode = "fixed";
+    showNotice("X軸を進行に合わせる設定は課金版プレビューで利用できます。");
+    renderChart();
+    return;
+  }
+  state.chart.xAxisMode = els.xAxisModeSelect.value;
+  renderChart();
+});
+els.growthPositionSelect.addEventListener("change", () => {
+  state.chart.growthPosition = els.growthPositionSelect.value;
   renderChart();
 });
 els.logScaleInput.addEventListener("change", () => {
@@ -924,22 +976,27 @@ els.showGrowthInput.addEventListener("change", () => {
   state.chart.showGrowth = els.showGrowthInput.checked;
   renderChart();
 });
+els.squareHideLegendInput.addEventListener("change", () => {
+  state.chart.squareHideLegendWithEndLabels = els.squareHideLegendInput.checked;
+  renderChart();
+});
 els.showPointsInput.addEventListener("change", () => {
   state.chart.showPoints = els.showPointsInput.checked;
   renderChart();
 });
 els.themeSelect.addEventListener("change", () => {
-  if (isProTheme(els.themeSelect.value) && state.plan !== "pro") {
-    showNotice("このテンプレートは課金版機能です。課金版プレビューに切り替えると使用できます。");
-    els.themeSelect.value = state.chart.theme;
-    return;
-  }
   applyTheme(els.themeSelect.value);
   renderSeriesCheckboxes();
   renderChart();
 });
 els.aspectRatioSelect.addEventListener("change", () => {
+  const previousRatio = state.chart.aspectRatio;
   state.chart.aspectRatio = els.aspectRatioSelect.value;
+  if (state.chart.aspectRatio !== "16:9" && previousRatio === "16:9" && state.chart.growthPosition === "topRight") {
+    state.chart.growthPosition = "bottom";
+    els.growthPositionSelect.value = "bottom";
+  }
+  renderAspectRatioUi();
   renderChart();
 });
 els.backgroundColorInput.addEventListener("input", () => {
@@ -954,8 +1011,10 @@ els.gridColorInput.addEventListener("input", () => {
   state.chart.gridColor = els.gridColorInput.value;
   renderChart();
 });
-els.videoDurationSelect.addEventListener("change", () => {
-  state.chart.videoDuration = Number(els.videoDurationSelect.value);
+els.videoDurationInput.addEventListener("input", () => {
+  state.chart.videoDuration = normalizeVideoDuration(els.videoDurationInput.value);
+  els.videoDurationInput.value = String(state.chart.videoDuration);
+  updateVideoDurationHint();
 });
 els.includeNarrationInput.addEventListener("change", () => {
   if (state.plan !== "pro") {
@@ -965,6 +1024,10 @@ els.includeNarrationInput.addEventListener("change", () => {
     return;
   }
   state.chart.includeNarrationInPng = els.includeNarrationInput.checked;
+  renderChart();
+});
+els.squareShortNarrationInput.addEventListener("change", () => {
+  state.chart.squareShortNarration = els.squareShortNarrationInput.checked;
   renderChart();
 });
 els.barTopNSelect.addEventListener("change", () => {
@@ -1011,9 +1074,11 @@ els.comparePlansButton.addEventListener("click", () => {
 els.copyNarrationButton.addEventListener("click", copyNarration);
 els.startHoldInput.addEventListener("input", () => {
   state.chart.startHold = Number(els.startHoldInput.value || 0);
+  updateVideoDurationHint();
 });
 els.endHoldInput.addEventListener("input", () => {
   state.chart.endHold = Number(els.endHoldInput.value || 0);
+  updateVideoDurationHint();
 });
 els.speedRange.addEventListener("input", () => {
   if (state.mode === "chart" && !state.chart.isRecording) playChartAnimation();
@@ -1039,6 +1104,16 @@ els.showCsvExampleButton?.addEventListener("click", () => {
   els.csvExamplePanel.hidden = !els.csvExamplePanel.hidden;
 });
 els.useSampleHelpButton?.addEventListener("click", openGuideSample);
+els.sampleSuggestionCloseButton?.addEventListener("click", () => {
+  els.sampleSuggestionPanel.hidden = true;
+});
+document.querySelectorAll("[data-sample-key]").forEach((button) => {
+  button.addEventListener("click", () => openRecommendedSample(button.dataset.sampleKey));
+});
+els.copyLineExampleButton?.addEventListener("click", () => copyCsvExample("line"));
+els.copyBarExampleButton?.addEventListener("click", () => copyCsvExample("barRace"));
+els.tryLineExampleButton?.addEventListener("click", () => loadCsvExample("line"));
+els.tryBarExampleButton?.addEventListener("click", () => loadCsvExample("barRace"));
 document.addEventListener("keydown", (event) => {
   if (!guideState.active) return;
   if (event.key === "Escape") finishGuideTour(true);
@@ -1117,6 +1192,7 @@ function showGuideCompletion() {
   els.guideText.textContent = "まずはサンプルで完成まで試すか、自分のCSVを読み込んで始めましょう。";
   els.guideNextButton.textContent = "閉じる";
   setGuideCompletionActions(true);
+  showGuideRecommendations(true);
   const cardWidth = Math.min(360, window.innerWidth - 24);
   Object.assign(els.guideCard.style, {
     left: `${Math.max(12, (window.innerWidth - cardWidth) / 2)}px`,
@@ -1198,6 +1274,7 @@ function finishGuideTour(remember) {
   if (els.guideHighlight) els.guideHighlight.hidden = true;
   if (els.guideCard) els.guideCard.hidden = true;
   setGuideCompletionActions(false);
+  showGuideRecommendations(false);
   if (remember) {
     localStorage.setItem(GUIDE_STORAGE_KEY, "true");
     guideState.completed = true;
@@ -1209,6 +1286,10 @@ function setGuideCompletionActions(show) {
   if (els.guideSampleButton) els.guideSampleButton.hidden = !show;
   if (els.guideImportButton) els.guideImportButton.hidden = !show;
   if (els.guideSkipButton) els.guideSkipButton.hidden = show;
+}
+
+function showGuideRecommendations(show) {
+  if (els.guideRecommendations) els.guideRecommendations.hidden = !show;
 }
 
 function isGuideTargetVisible(target) {
@@ -1230,13 +1311,23 @@ function handleGuideTargetClick(event) {
 }
 
 function openGuideSample() {
-  els.sampleSelect.value = GUIDE_SAMPLE_KEY;
-  trackGuideEvent("sample_opened_after_tour");
+  openRecommendedSample(GUIDE_SAMPLE_KEY, {
+    message: "サンプルを読み込みました。まずは『アニメーション再生』を押して動きを確認してください。",
+  });
+}
+
+function openRecommendedSample(sampleKey, options = {}) {
+  if (!SAMPLE_DATASETS[sampleKey]) return;
+  els.sampleSelect.value = sampleKey;
+  trackGuideEvent("sample_opened_after_tour", { sampleKey });
   createNewFile();
   setMode("chart");
+  showSampleSuggestions();
+  if (options.message) showNotice(options.message);
 }
 
 function trackGuideEvent(name, detail = {}) {
+  if (!GUIDE_EVENT_NAMES.has(name)) return;
   const event = {
     name,
     detail,
@@ -1244,8 +1335,54 @@ function trackGuideEvent(name, detail = {}) {
   };
   window.timeSeriesGuideEvents = window.timeSeriesGuideEvents || [];
   window.timeSeriesGuideEvents.push(event);
+  const stored = JSON.parse(localStorage.getItem(GUIDE_EVENT_STORAGE_KEY) || "[]");
+  stored.push(event);
+  localStorage.setItem(GUIDE_EVENT_STORAGE_KEY, JSON.stringify(stored.slice(-100)));
   if (window.console?.debug) console.debug("[guide]", name, detail);
 }
+
+function showSampleSuggestions() {
+  if (!els.sampleSuggestionPanel) return;
+  els.sampleSuggestionPanel.hidden = false;
+}
+
+function trackAnimationAfterTour() {
+  if (!guideState.completed && localStorage.getItem(GUIDE_STORAGE_KEY) !== "true") return;
+  if (sessionStorage.getItem("timeseries-animation-after-tour") === "true") return;
+  sessionStorage.setItem("timeseries-animation-after-tour", "true");
+  trackGuideEvent("animation_played_after_tour");
+  showNotice("気に入ったら『PNG保存』または『動画保存』で書き出せます。");
+}
+
+async function copyCsvExample(type) {
+  const text = CSV_EXAMPLES[type];
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    showNotice("CSV例をコピーしました。");
+  } catch (error) {
+    showNotice("コピーできませんでした。ブラウザの権限を確認してください。");
+  }
+}
+
+function loadCsvExample(type) {
+  const text = CSV_EXAMPLES[type];
+  if (!text) return;
+  state.chart.graphMode = type === "barRace" ? "barRace" : "line";
+  loadData(type === "barRace" ? "bar-chart-race-example.csv" : "line-chart-example.csv", parseCsv(text));
+  setMode("chart");
+  showNotice("CSV例を読み込みました。プレビューで見え方を確認できます。");
+}
+
+window.resetTimeSeriesGuideState = function resetTimeSeriesGuideState() {
+  localStorage.removeItem(GUIDE_STORAGE_KEY);
+  localStorage.removeItem(GUIDE_EVENT_STORAGE_KEY);
+  sessionStorage.removeItem("timeseries-animation-after-tour");
+  sessionStorage.removeItem("timeseries-free-export-notice");
+  guideState.completed = false;
+  window.timeSeriesGuideEvents = [];
+  showNotice("開発用: ガイド状態をリセットしました。");
+};
 
 function handleFileLoad(event) {
   const file = event.target.files[0];
@@ -1369,6 +1506,8 @@ function hydrateChartInputs() {
   els.subtitleInput.value = state.chart.subtitle;
   els.xAxisInput.value = state.chart.xAxisName;
   els.yAxisInput.value = state.chart.yAxisName;
+  els.xAxisModeSelect.value = state.chart.xAxisMode;
+  els.growthPositionSelect.value = state.chart.growthPosition;
   els.unitInput.value = state.chart.unit;
   els.noteInput.value = state.chart.note;
   els.sourceInput.value = state.chart.source;
@@ -1380,14 +1519,17 @@ function hydrateChartInputs() {
   els.indexBaseInput.checked = state.chart.indexBase;
   els.showEndLabelsInput.checked = state.chart.showEndLabels;
   els.showGrowthInput.checked = state.chart.showGrowth;
+  els.squareHideLegendInput.checked = state.chart.squareHideLegendWithEndLabels;
   els.showPointsInput.checked = state.chart.showPoints;
   els.themeSelect.value = state.chart.theme;
   els.aspectRatioSelect.value = state.chart.aspectRatio;
   els.backgroundColorInput.value = state.chart.backgroundColor;
   els.textColorInput.value = state.chart.textColor;
   els.gridColorInput.value = state.chart.gridColor;
-  els.videoDurationSelect.value = String(state.chart.videoDuration);
+  els.videoDurationInput.value = String(state.chart.videoDuration);
+  updateVideoDurationHint();
   els.includeNarrationInput.checked = state.chart.includeNarrationInPng;
+  els.squareShortNarrationInput.checked = state.chart.squareShortNarration;
   els.barTopNSelect.value = String(state.chart.barTopN);
   els.barSortOrderSelect.value = state.chart.barSortOrder;
   els.barScaleModeSelect.value = state.chart.barScaleMode;
@@ -1410,6 +1552,7 @@ function render() {
   els.chartModeButton.classList.toggle("active", state.mode === "chart");
   els.chartHost.hidden = state.mode !== "chart";
   els.chartHost.dataset.graphMode = state.chart.graphMode;
+  renderAspectRatioUi();
   els.tableHost.hidden = state.mode !== "edit";
   els.editToolbar.hidden = state.mode !== "edit";
   els.fileStatus.textContent = state.headers.length
@@ -1426,16 +1569,11 @@ function render() {
 function setPlanMode(plan) {
   state.plan = plan === "pro" ? "pro" : "free";
   localStorage.setItem(PLAN_STORAGE_KEY, state.plan);
-  if (state.plan !== "pro" && isProTheme(state.chart.theme)) {
-    applyTheme("presentation");
-    showNotice("無料版では基本テーマに戻ります。Proテンプレートは課金版プレビューで利用できます。");
-  } else {
-    showNotice(
-      state.plan === "pro"
-        ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。"
-        : "無料版に切り替えました。720p・透かしありで保存されます。"
-    );
-  }
+  showNotice(
+    state.plan === "pro"
+      ? "課金版プレビュー中：透かしなし・1080p・解説文生成・商用利用OK表示が利用できます。"
+      : "無料版に切り替えました。720p・透かしありで保存されます。"
+  );
   if (state.chart.graphMode === "barRace") enforceBarRaceTopLimit();
   render();
 }
@@ -1448,15 +1586,20 @@ function renderPlanUi() {
   els.freeModeButton.setAttribute("aria-pressed", String(!isPro));
   els.proModeButton.setAttribute("aria-pressed", String(isPro));
   els.planNotice.textContent = isPro
-    ? "課金版プレビュー中：透かしなし・1080p・追加テンプレート・解説文生成・商用利用OK表示が利用できます。現在は課金テスト中です。"
+    ? "課金版プレビュー中：透かしなし・1080p・解説文生成・商用利用OK表示が利用できます。現在は課金テスト中です。"
     : "無料版：720p / 透かしあり。課金テスト中のため決済は発生しません。";
   els.qualityLabel.textContent = getQualityLabel();
   els.includeNarrationInput.disabled = !isPro;
+  els.squareShortNarrationInput.disabled = !isPro;
   if (!isPro) {
     els.includeNarrationInput.checked = false;
     state.chart.includeNarrationInPng = false;
   } else {
     els.includeNarrationInput.checked = state.chart.includeNarrationInPng;
+  }
+  if (!isPro && state.chart.xAxisMode === "progressive") {
+    state.chart.xAxisMode = "fixed";
+    els.xAxisModeSelect.value = "fixed";
   }
 }
 
@@ -1467,25 +1610,41 @@ function renderThemeOptions() {
   els.themeSelect.value = state.chart.theme;
 }
 
-function getThemeOptionLabel(themeName) {
-  const labels = {
-    presentation: "白背景プレゼン",
-    dark: "ダークSNS",
-    newspaper: "経済レポート",
-    youtube: "YouTube解説風",
-    article: "新聞記事風",
-    finance: "金融レポート風",
-    classroom: "授業スライド風",
-    ir: "企業IR風",
-    verticalSns: "SNS縦動画風",
-    luxury: "ミニマル高級感",
-  };
-  const label = labels[themeName] || themeName;
-  return isProTheme(themeName) && state.plan !== "pro" ? `${label} 🔒 Pro` : label;
+function renderAspectRatioUi() {
+  els.chartHost.dataset.aspectRatio = state.chart.aspectRatio;
+  if (els.squareShortNarrationInput) {
+    els.squareShortNarrationInput.closest("label").hidden = !isCompactRatio();
+  }
 }
 
-function isProTheme(themeName) {
-  return PRO_THEME_KEYS.includes(themeName);
+function normalizeVideoDuration(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 10;
+  return Math.min(120, Math.max(3, Math.round(numeric)));
+}
+
+function updateVideoDurationHint() {
+  if (!els.videoDurationHint) return;
+  const total = normalizeVideoDuration(state.chart.videoDuration);
+  const start = Number(state.chart.startHold || 0);
+  const end = Number(state.chart.endHold || 0);
+  const moving = Math.max(1, total - start - end);
+  els.videoDurationHint.textContent = `WebM保存時は${total}秒で書き出します。動く時間の目安は約${formatNumber(moving)}秒です。`;
+}
+
+function getThemeOptionLabel(themeName) {
+  const labels = {
+    presentation: "白ベース",
+    dark: "黒ベース",
+    newspaper: "ベージュベース",
+    classroom: "青ベース",
+    youtube: "赤ベース",
+    ir: "緑ベース",
+    verticalSns: "紫ベース",
+    luxury: "金ベース",
+  };
+  const label = labels[themeName] || themeName;
+  return label;
 }
 
 function isProPlan() {
@@ -1587,7 +1746,9 @@ function renderDiagnostics() {
 function renderNarration() {
   if (!els.narrationText) return;
   const isPro = isProPlan();
-  els.narrationModeBadge.textContent = isPro ? "詳細版 Pro" : "簡易版";
+  els.narrationModeBadge.innerHTML = isPro ? '詳細版 <img class="crown-mark" src="assets/pro-crown-gold.png" alt="">' : "簡易版";
+  els.narrationText.closest(".narration-panel")?.classList.toggle("free-narration", !isPro);
+  els.narrationText.closest(".narration-panel")?.classList.toggle("pro-narration", isPro);
   els.narrationText.textContent = generateNarration(isPro ? "pro" : "free");
 }
 
@@ -1621,6 +1782,25 @@ function generateNarration(mode = state.plan) {
   if (lead.maxRise) parts.push(`${lead.name}の最大上昇は${formatTimeLabel(String(lead.maxRise.year), lead.maxRise.year)}で、前年差は${formatValue(lead.maxRise.diff)}でした。`);
   if (lead.maxFall) parts.push(`最大下落は${formatTimeLabel(String(lead.maxFall.year), lead.maxFall.year)}で、前年差は${formatValue(lead.maxFall.diff)}でした。`);
   return parts.join("");
+}
+
+function generateShortNarration() {
+  const data = getChartData();
+  if (state.chart.graphMode === "barRace") {
+    const text = generateBarRaceNarration(data, "free");
+    return text.split("。")[0] ? `${text.split("。")[0]}。` : text;
+  }
+  const metrics = getSeriesMetrics(data.points, data.series).filter(Boolean);
+  if (metrics.length === 0) return "選択した期間の変化を一目で確認できます。";
+  const lead = metrics[0];
+  const startYear = formatTimeLabel(data.points[0].label, data.points[0].time);
+  const endPoint = data.points[data.points.length - 1];
+  const endYear = formatTimeLabel(endPoint.label, endPoint.time);
+  if (metrics.length === 1) {
+    return `${lead.name}は${startYear}から${endYear}で約${formatNumber(lead.multiple)}倍になりました。`;
+  }
+  const best = [...metrics].sort((a, b) => b.multiple - a.multiple)[0];
+  return `${startYear}から${endYear}で、最も伸びた系列は${best.name}です。`;
 }
 
 function generateBarRaceNarration(data, mode = state.plan) {
@@ -2033,6 +2213,7 @@ function renderChart() {
   els.chartTitle.textContent = state.chart.title;
   els.logWarning.hidden = !(state.chart.logScale && hasNonPositiveValues(data.points, data.series));
   els.indexWarning.hidden = !(state.chart.indexBase && hasInvalidIndexBase());
+  updateScaleSuggestion(data.points, data.series);
   updateButtons();
 
   if (!hasChart) {
@@ -2071,6 +2252,25 @@ function hasInvalidIndexBase() {
       .sort((a, b) => a.time - b.time)[0];
     return !first || !Number.isFinite(first.value) || first.value === 0;
   });
+}
+
+function updateScaleSuggestion(points, series) {
+  if (!els.scaleSuggestion) return;
+  if (state.chart.graphMode !== "line" || state.chart.indexBase || series.length < 2) {
+    els.scaleSuggestion.hidden = true;
+    return;
+  }
+  const medians = series
+    .map((item) => points.map((point) => point.values[item.column]).filter(Number.isFinite).sort((a, b) => a - b))
+    .filter((values) => values.length > 0)
+    .map((values) => values[Math.floor(values.length / 2)])
+    .filter((value) => value > 0);
+  if (medians.length < 2) {
+    els.scaleSuggestion.hidden = true;
+    return;
+  }
+  const ratio = Math.max(...medians) / Math.max(1e-9, Math.min(...medians));
+  els.scaleSuggestion.hidden = ratio < 20;
 }
 
 function getChartData() {
@@ -2192,7 +2392,7 @@ function runChartAnimation({ onComplete, exportSize } = {}) {
   stopChart();
   state.chart.progress = 0;
   state.chart.startedAt = performance.now();
-  const totalDuration = Number(state.chart.videoDuration || 10) * 1000;
+  const totalDuration = normalizeVideoDuration(state.chart.videoDuration) * 1000;
   const startHold = Number(state.chart.startHold || 0) * 1000;
   const endHold = Number(state.chart.endHold || 0) * 1000;
   const speedAdjusted = Math.max(1200, totalDuration - startHold - endHold) / Number(els.speedRange.value || 1);
@@ -2301,7 +2501,7 @@ function showFreeExportNoticeOnce() {
   if (isProPlan()) return;
   if (sessionStorage.getItem("timeseries-free-export-notice") === "true") return;
   sessionStorage.setItem("timeseries-free-export-notice", "true");
-  showNotice("保存できました。無料版では720p・透かしありで出力されます。仕上がりを比較したい場合は、課金版プレビューで1080p・透かしなし出力を試せます。");
+  showNotice("保存できました。課金版プレビューでは、透かしなし・1080p・整った資料用レイアウトで保存できます。");
 }
 
 function trackExportAfterTour(format) {
@@ -2341,7 +2541,7 @@ async function batchExportMaterials() {
   const minSeries = state.chart.graphMode === "barRace" ? 2 : 1;
   if (data.points.length < 2 || data.series.length < minSeries) return;
   const originalRatio = state.chart.aspectRatio;
-  const ratios = ["16:9", "1:1", "9:16"];
+  const ratios = ["16:9", "1:1", "4:3"];
   try {
     ratios.forEach((ratio) => {
       state.chart.aspectRatio = ratio;
@@ -2353,7 +2553,7 @@ async function batchExportMaterials() {
     const textBlob = new Blob([generateNarration("pro")], { type: "text/plain;charset=utf-8" });
     downloadBlob(textBlob, `${slugify(state.chart.title || "timeseries-chart")}-commentary-${getDateStamp()}.txt`);
     await recordChartAnimation({ aspectRatio: "16:9" });
-    await recordChartAnimation({ aspectRatio: "9:16" });
+    await recordChartAnimation({ aspectRatio: "4:3" });
     showNotice("資料セットを書き出しました。PNG、WebM、解説文テキストを個別ダウンロードします。");
   } catch (error) {
     showNotice(`資料セット出力に失敗しました。${error?.message || "ブラウザの保存機能を確認してください。"}`);
@@ -2399,13 +2599,24 @@ function drawChart(data, progress, options = {}) {
     return;
   }
 
-  const header = getCanvasHeaderLayout(ctx, cssWidth, series, points);
-  const padding = { top: header.plotTop, right: 42, bottom: 78, left: 86 };
+  const header = getCanvasHeaderLayout(ctx, cssWidth, cssHeight, series, points);
+  const padding = header.padding || { top: header.plotTop, right: state.chart.showEndLabels ? 170 : 42, bottom: 78, left: 86 };
   const plotWidth = cssWidth - padding.left - padding.right;
   const plotHeight = cssHeight - padding.top - padding.bottom;
   const times = points.map((point) => point.time);
   const minTime = Math.min(...times);
-  const maxTime = Math.max(...times);
+  const fullMaxTime = Math.max(...times);
+  const visibleEnd = safeProgress * (points.length - 1);
+  const fromIndex = Math.floor(visibleEnd);
+  const toIndex = Math.min(points.length - 1, fromIndex + 1);
+  const partial = visibleEnd - fromIndex;
+  const currentTime = points[fromIndex].time + ((points[toIndex]?.time ?? points[fromIndex].time) - points[fromIndex].time) * partial;
+  const maxTime = state.chart.xAxisMode === "progressive" && isProPlan()
+    ? Math.max(minTime + 1, currentTime)
+    : fullMaxTime;
+  const axisPoints = state.chart.xAxisMode === "progressive" && isProPlan()
+    ? points.filter((point) => point.time <= maxTime)
+    : points;
   const scale = getYScale(points, series);
   const xFor = (time) => padding.left + ((time - minTime) / (maxTime - minTime || 1)) * plotWidth;
   const yFor = (value) => {
@@ -2418,8 +2629,8 @@ function drawChart(data, progress, options = {}) {
     return padding.top + (1 - (value - scale.min) / (scale.max - scale.min || 1)) * plotHeight;
   };
 
-  drawChartFrame(ctx, { cssWidth, cssHeight, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors, header });
-  drawSeries(ctx, { points, series, xFor, yFor, progress: safeProgress, padding, plotWidth });
+  drawChartFrame(ctx, { cssWidth, cssHeight, padding, plotWidth, plotHeight, points: axisPoints, series, xFor, yFor, scale, colors, header });
+  drawSeries(ctx, { points, series, xFor, yFor, progress: safeProgress, padding, plotWidth, plotHeight, colors, cssWidth });
   drawHover(ctx, { points, series, xFor, yFor, padding, plotHeight, colors });
   if (options.exportSize && isProPlan() && state.chart.includeNarrationInPng) {
     drawNarrationOnCanvas(ctx, { cssWidth, cssHeight, padding, colors });
@@ -2436,13 +2647,13 @@ function getPreviewCanvasSize(canvas) {
   const ratioValue = getAspectRatioValue();
   let width = Math.max(320, Math.min(1280, frameWidth));
   let height = Math.round(width / ratioValue);
-  if (state.chart.aspectRatio === "9:16") {
-    height = Math.min(820, Math.max(520, height));
-    width = Math.round(height * ratioValue);
-  }
   if (state.chart.aspectRatio === "1:1") {
     width = Math.min(width, 760);
     height = width;
+  }
+  if (state.chart.aspectRatio === "4:3") {
+    width = Math.min(width, 960);
+    height = Math.round(width * 3 / 4);
   }
   return { width, height };
 }
@@ -2450,11 +2661,11 @@ function getPreviewCanvasSize(canvas) {
 function getOutputCanvasSize() {
   if (isProPlan()) {
     if (state.chart.aspectRatio === "1:1") return { width: 1080, height: 1080 };
-    if (state.chart.aspectRatio === "9:16") return { width: 1080, height: 1920 };
+    if (state.chart.aspectRatio === "4:3") return { width: 1440, height: 1080 };
     return { width: 1920, height: 1080 };
   }
   if (state.chart.aspectRatio === "1:1") return { width: 720, height: 720 };
-  if (state.chart.aspectRatio === "9:16") return { width: 720, height: 1280 };
+  if (state.chart.aspectRatio === "4:3") return { width: 960, height: 720 };
   return { width: 1280, height: 720 };
 }
 
@@ -2465,21 +2676,40 @@ function drawWatermark(ctx, area) {
   ctx.textAlign = "right";
   ctx.textBaseline = "bottom";
   ctx.fillStyle = withAlpha(area.colors.text, 0.36);
-  ctx.fillText(text, area.cssWidth - 18, area.cssHeight - 14);
+  ctx.fillText(text, area.cssWidth - 28, area.cssHeight - 26);
   ctx.restore();
 }
 
 function drawNarrationOnCanvas(ctx, area) {
-  const text = generateNarration("pro");
+  const compact = isCompactRatio();
+  const text = compact && state.chart.squareShortNarration
+    ? generateShortNarration()
+    : generateNarration("pro");
   if (!text) return;
-  const lines = wrapCanvasText(ctx, text, area.cssWidth - area.padding.left * 2, 2);
+  const fontSize = compact
+    ? Math.max(20, Math.min(32, Math.round(area.cssWidth * 0.026)))
+    : Math.max(18, Math.min(30, Math.round(area.cssWidth * 0.014)));
+  const left = area.padding.left;
+  const width = compact
+    ? Math.min(area.cssWidth - left * 2, Math.round(area.cssWidth * 0.86))
+    : Math.min(area.cssWidth - left * 2, Math.round(area.cssWidth * 0.78));
+  const lineHeight = Math.round(fontSize * 1.55);
+  const maxLines = compact ? 2 : 3;
+  const lines = wrapCanvasText(ctx, text, width - 36, maxLines);
+  const cardHeight = 28 + lines.length * lineHeight;
+  const top = area.cssHeight - cardHeight - Math.max(46, Math.round(area.cssHeight * 0.055));
   ctx.save();
-  ctx.font = `15px ${CANVAS_FONT}`;
+  ctx.font = `700 ${fontSize}px ${CANVAS_FONT}`;
+  ctx.fillStyle = withAlpha(area.colors.background, 0.9);
+  roundRect(ctx, left, top, width, cardHeight, 12);
+  ctx.fill();
+  ctx.strokeStyle = withAlpha(area.colors.grid, 0.85);
+  ctx.stroke();
   ctx.textAlign = "left";
-  ctx.textBaseline = "bottom";
-  ctx.fillStyle = withAlpha(area.colors.text, 0.8);
+  ctx.textBaseline = "top";
+  ctx.fillStyle = withAlpha(area.colors.text, 0.92);
   lines.forEach((line, index) => {
-    ctx.fillText(line, area.padding.left, area.cssHeight - 42 + index * 18);
+    ctx.fillText(line, left + 18, top + 14 + index * lineHeight);
   });
   ctx.restore();
 }
@@ -2667,8 +2897,10 @@ function formatInterpolatedTime(from, to, progress) {
 function drawBarRaceYear(ctx, label, area) {
   const { cssWidth, cssHeight, margin, colors } = area;
   ctx.save();
-  ctx.font = `800 ${Math.max(44, Math.round(cssWidth * 0.09))}px ${CANVAS_FONT}`;
-  ctx.fillStyle = state.chart.barYearPosition === "center" ? withAlpha(colors.text, 0.12) : withAlpha(colors.text, 0.28);
+  const largeSize = Math.max(40, Math.min(96, Math.round(cssWidth * 0.07)));
+  const cornerSize = Math.max(28, Math.min(54, Math.round(cssWidth * 0.045)));
+  ctx.font = `800 ${state.chart.barYearPosition === "center" ? largeSize : cornerSize}px ${CANVAS_FONT}`;
+  ctx.fillStyle = state.chart.barYearPosition === "center" ? withAlpha(colors.text, 0.1) : withAlpha(colors.text, 0.34);
   ctx.textBaseline = "top";
   if (state.chart.barYearPosition === "center") {
     ctx.textAlign = "center";
@@ -2676,13 +2908,13 @@ function drawBarRaceYear(ctx, label, area) {
   } else if (state.chart.barYearPosition === "bottomRight") {
     ctx.textAlign = "right";
     ctx.textBaseline = "bottom";
-    ctx.fillText(label, cssWidth - margin.right, cssHeight - margin.bottom + 6);
+    ctx.fillText(label, cssWidth - margin.right, cssHeight - margin.bottom - 8);
   } else if (state.chart.barYearPosition === "topLeft") {
     ctx.textAlign = "left";
-    ctx.fillText(label, margin.left, 92);
+    ctx.fillText(label, margin.left, 86);
   } else {
     ctx.textAlign = "right";
-    ctx.fillText(label, cssWidth - margin.right, 86);
+    ctx.fillText(label, cssWidth - margin.right, 30);
   }
   ctx.restore();
 }
@@ -2709,16 +2941,23 @@ function roundRect(ctx, x, y, width, height, radius) {
 function drawChartFrame(ctx, area) {
   const { cssWidth, padding, plotWidth, plotHeight, points, series, xFor, yFor, scale, colors, header } = area;
   ctx.fillStyle = colors.text;
-  ctx.font = `700 24px ${CANVAS_FONT}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(truncateCanvasText(ctx, state.chart.title, plotWidth), padding.left, 24);
+  ctx.font = `700 ${header.titleFontSize || 24}px ${CANVAS_FONT}`;
+  const titleMaxWidth = state.chart.showGrowth && getEffectiveGrowthPosition() === "topRight"
+    ? Math.max(260, plotWidth - 310)
+    : plotWidth;
+  const titleLines = header.titleLines || [truncateCanvasText(ctx, state.chart.title, titleMaxWidth)];
+  titleLines.forEach((line, index) => {
+    ctx.fillText(line, padding.left, header.titleY + index * header.titleLineHeight);
+  });
 
   ctx.font = `13px ${CANVAS_FONT}`;
   ctx.fillStyle = colors.muted;
-  ctx.fillText(truncateCanvasText(ctx, state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : ""), plotWidth), padding.left, 56);
+  const subtitle = state.chart.subtitle || (state.chart.unit ? `単位: ${state.chart.unit}` : "");
+  if (subtitle) ctx.fillText(truncateCanvasText(ctx, subtitle, titleMaxWidth), padding.left, header.subtitleY);
 
-  drawLegend(ctx, series, cssWidth, padding, colors, header.legendY);
+  if (header.showLegend) drawLegend(ctx, series, cssWidth, padding, colors, header.legendY);
 
   ctx.strokeStyle = colors.axis;
   ctx.lineWidth = 1;
@@ -2762,7 +3001,7 @@ function drawChartFrame(ctx, area) {
   ctx.save();
   ctx.translate(24, padding.top + plotHeight / 2);
   ctx.rotate(-Math.PI / 2);
-  ctx.fillText(state.chart.yAxisName, 0, 0);
+  ctx.fillText(getEffectiveYAxisName(series), 0, 0);
   ctx.restore();
 
   ctx.font = `12px ${CANVAS_FONT}`;
@@ -2770,21 +3009,56 @@ function drawChartFrame(ctx, area) {
   ctx.textBaseline = "bottom";
   ctx.fillStyle = colors.muted;
   const footer = [state.chart.note, state.chart.source ? `出典: ${state.chart.source}` : ""].filter(Boolean).join(" / ");
-  if (footer) ctx.fillText(footer, padding.left, area.cssHeight - 14);
+  if (footer) {
+    const footerMaxWidth = isCompactRatio()
+      ? Math.max(220, area.cssWidth - padding.left - padding.right - 150)
+      : area.cssWidth - padding.left - padding.right;
+    ctx.fillText(truncateCanvasText(ctx, footer, footerMaxWidth), padding.left, area.cssHeight - 18);
+  }
 
   if (state.chart.showGrowth) drawGrowthSummary(ctx, area, header.growthRows, header.growthY);
 }
 
-function getCanvasHeaderLayout(ctx, cssWidth, series, points) {
-  const paddingLeft = 86;
-  const paddingRight = 42;
+function getCanvasHeaderLayout(ctx, cssWidth, cssHeight, series, points) {
+  const isSquare = state.chart.aspectRatio === "1:1";
+  const isFourThree = state.chart.aspectRatio === "4:3";
+  const compact = isCompactRatio();
+  const paddingLeft = isFourThree ? 82 : 86;
+  const paddingRight = state.chart.showEndLabels ? (isSquare ? 138 : isFourThree ? 150 : 170) : 42;
   const plotWidth = cssWidth - paddingLeft - paddingRight;
-  const legendY = 80;
-  const legendRows = Math.max(1, countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight));
+  const titleFontSize = compact ? Math.max(22, Math.round(cssWidth * (isSquare ? 0.033 : 0.024))) : 24;
+  const titleLineHeight = Math.round(titleFontSize * 1.18);
+  ctx.font = `700 ${titleFontSize}px ${CANVAS_FONT}`;
+  const titleMaxWidth = !compact && state.chart.showGrowth && getEffectiveGrowthPosition() === "topRight"
+    ? Math.max(260, plotWidth - 310)
+    : plotWidth;
+  const titleLines = compact
+    ? wrapCanvasText(ctx, state.chart.title, titleMaxWidth, isSquare ? 3 : 2)
+    : [truncateCanvasText(ctx, state.chart.title, titleMaxWidth)];
+  const titleY = compact ? 28 : 24;
+  const subtitleY = titleY + titleLines.length * titleLineHeight + (compact ? 8 : 6);
+  const legendY = subtitleY + (state.chart.subtitle || state.chart.unit ? 26 : 18);
+  const showLegend = !(compact && state.chart.showEndLabels && state.chart.squareHideLegendWithEndLabels);
+  const legendRows = showLegend ? Math.max(1, countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight)) : 0;
   const growthRows = state.chart.showGrowth ? getGrowthSummaryRows(points, series).slice(0, 3) : [];
-  const growthY = legendY + legendRows * 22 + 8;
-  const plotTop = Math.max(118, growthY + growthRows.length * 17 + 20);
-  return { legendY, legendRows, growthY, growthRows, plotTop, plotWidth };
+  const growthY = legendY + legendRows * 22 + 10;
+  const bottom = compact ? (state.chart.showGrowth ? 142 : 96) : 78;
+  const plotTop = Math.max(compact ? 148 : 126, legendY + legendRows * 22 + (showLegend ? 30 : 18));
+  return {
+    titleY,
+    titleLines,
+    titleFontSize,
+    titleLineHeight,
+    subtitleY,
+    legendY,
+    legendRows,
+    showLegend,
+    growthY,
+    growthRows,
+    plotTop,
+    plotWidth,
+    padding: { top: plotTop, right: paddingRight, bottom, left: paddingLeft },
+  };
 }
 
 function countLegendRows(ctx, series, cssWidth, paddingLeft, paddingRight) {
@@ -2893,8 +3167,12 @@ function drawSeries(ctx, area) {
 
 function getAspectRatioValue() {
   if (state.chart.aspectRatio === "1:1") return 1;
-  if (state.chart.aspectRatio === "9:16") return 9 / 16;
+  if (state.chart.aspectRatio === "4:3") return 4 / 3;
   return 16 / 9;
+}
+
+function isCompactRatio() {
+  return state.chart.aspectRatio === "1:1" || state.chart.aspectRatio === "4:3";
 }
 
 function drawHover(ctx, area) {
@@ -2927,7 +3205,7 @@ function getVisiblePoint(points, progress) {
 }
 
 function drawEndLabels(ctx, area) {
-  const { points, series, xFor, yFor, padding, plotWidth, colors } = area;
+  const { points, series, xFor, yFor, padding, plotWidth, plotHeight, colors, cssWidth } = area;
   const latestVisibleIndex = Math.min(points.length - 1, Math.max(0, Math.floor(area.progress * (points.length - 1))));
   const labelPoints = series
     .map((item) => {
@@ -2943,16 +3221,31 @@ function drawEndLabels(ctx, area) {
     .filter(Boolean)
     .sort((a, b) => a.y - b.y);
 
-  let lastY = -Infinity;
-  ctx.font = `12px ${CANVAS_FONT}`;
+  const labelFontSize = 11;
+  const minGap = 17;
+  const labelMaxWidth = Math.max(86, padding.right - 24);
+  let lastY = padding.top - minGap;
+  ctx.font = `700 ${labelFontSize}px ${CANVAS_FONT}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
   labelPoints.forEach((label) => {
-    const y = Math.max(label.y, lastY + 16);
+    const y = Math.min(padding.top + plotHeight - 8, Math.max(label.y, lastY + minGap));
     lastY = y;
-    const x = Math.min(label.x + 10, padding.left + plotWidth - 120);
+    const connectorEnd = padding.left + plotWidth + 8;
+    const x = connectorEnd + 6;
+    const text = truncateCanvasText(ctx, `${label.item.name} ${formatValue(label.value)}`, Math.min(labelMaxWidth, cssWidth - x - 12));
+    ctx.strokeStyle = withAlpha(label.item.color, 0.55);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(Math.min(label.x + 4, padding.left + plotWidth), label.y);
+    ctx.lineTo(connectorEnd, y);
+    ctx.stroke();
+    const textWidth = ctx.measureText(text).width;
+    ctx.fillStyle = withAlpha(colors.background, 0.84);
+    roundRect(ctx, x - 4, y - 9, textWidth + 8, 18, 5);
+    ctx.fill();
     ctx.fillStyle = label.item.color;
-    ctx.fillText(`${label.item.name} ${formatValue(label.value)}`, x, y);
+    ctx.fillText(text, x, y);
   });
 }
 
@@ -2971,16 +3264,66 @@ function getGrowthSummaryRows(points, series) {
 }
 
 function drawGrowthSummary(ctx, area, rows, startY) {
-  const { padding, plotWidth, colors } = area;
+  const { padding, plotWidth, colors, cssWidth, cssHeight } = area;
 
   if (rows.length === 0) return;
   ctx.font = `12px ${CANVAS_FONT}`;
-  ctx.textAlign = "left";
   ctx.textBaseline = "top";
+  const visibleRows = rows.slice(0, 3);
+  if (getEffectiveGrowthPosition() === "bottom") {
+    ctx.textAlign = "left";
+    const cardWidth = Math.min(plotWidth, cssWidth - padding.left - padding.right);
+    const cardHeight = 22 + visibleRows.length * 17;
+    const x = padding.left;
+    const y = Math.min(cssHeight - cardHeight - 40, padding.top + area.plotHeight + 16);
+    ctx.fillStyle = withAlpha(colors.background, 0.86);
+    roundRect(ctx, x, y, cardWidth, cardHeight, 8);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(colors.grid, 0.72);
+    ctx.stroke();
+    ctx.fillStyle = colors.muted;
+    visibleRows.forEach((row, index) => {
+      ctx.fillText(truncateCanvasText(ctx, row, cardWidth - 24), x + 12, y + 11 + index * 17);
+    });
+    return;
+  }
+  const cardWidth = Math.min(280, Math.max(210, plotWidth * 0.32));
+  const cardHeight = 24 + visibleRows.length * 17;
+  const x = cssWidth - padding.right - cardWidth;
+  const y = 24;
+  ctx.fillStyle = withAlpha(colors.background, 0.82);
+  roundRect(ctx, x, y, cardWidth, cardHeight, 8);
+  ctx.fill();
+  ctx.strokeStyle = withAlpha(colors.grid, 0.9);
+  ctx.stroke();
+  ctx.textAlign = "left";
   ctx.fillStyle = colors.muted;
-  rows.slice(0, 3).forEach((row, index) => {
-    ctx.fillText(truncateCanvasText(ctx, row, plotWidth), padding.left, startY + index * 17);
+  visibleRows.forEach((row, index) => {
+    ctx.fillText(truncateCanvasText(ctx, row, cardWidth - 24), x + 12, y + 12 + index * 17);
   });
+}
+
+function getEffectiveGrowthPosition() {
+  if (state.chart.aspectRatio === "16:9") return state.chart.growthPosition;
+  return state.chart.growthPosition === "topRight" ? "bottom" : state.chart.growthPosition;
+}
+
+function getEffectiveYAxisName(series = []) {
+  const raw = String(state.chart.yAxisName || "").trim();
+  if (raw && raw !== "値") return raw;
+  const source = `${state.chart.title} ${state.chart.subtitle} ${series.map((item) => item.name).join(" ")}`;
+  const unit = String(state.chart.unit || "").trim();
+  let metric = "";
+  if (/GDP|国内総生産|実質GDP/i.test(source)) metric = "実質GDP";
+  else if (/人口/.test(source)) metric = "人口";
+  else if (/売上|sales/i.test(source)) metric = "売上";
+  else if (/フォロワー|followers/i.test(source)) metric = "フォロワー数";
+  else if (/再生|views/i.test(source)) metric = "再生数";
+  else if (/指数|index/i.test(source)) metric = "指数";
+  if (metric && unit) return `${metric}（${unit}）`;
+  if (metric) return metric;
+  if (unit) return `値（${unit}）`;
+  return "値";
 }
 
 function getYScale(points, series) {
@@ -3130,12 +3473,15 @@ function clearCanvasHover() {
 function getChartColors() {
   const theme = THEMES[state.chart.theme] || THEMES.presentation;
   const text = state.chart.textColor || theme.textColor;
+  const darkCanvas = getHexLuminance(state.chart.backgroundColor || theme.chartBackground) < 0.22;
+  const grid = state.chart.gridColor || theme.gridColor;
+  const axis = state.chart.axisColor || theme.axisColor;
   return {
     background: state.chart.backgroundColor || theme.chartBackground,
     text,
     muted: withAlpha(text, 0.68),
-    grid: state.chart.gridColor || theme.gridColor,
-    axis: state.chart.axisColor || theme.axisColor,
+    grid: darkCanvas ? withAlpha(grid, 0.38) : grid,
+    axis: darkCanvas ? withAlpha(axis, 0.58) : axis,
     focus: withAlpha(text, 0.45),
   };
 }
@@ -3185,11 +3531,21 @@ function applyCssTheme(theme) {
 }
 
 function withAlpha(hex, alpha) {
+  if (!String(hex).startsWith("#")) return hex;
   const normalized = hex.replace("#", "");
   const r = parseInt(normalized.slice(0, 2), 16);
   const g = parseInt(normalized.slice(2, 4), 16);
   const b = parseInt(normalized.slice(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getHexLuminance(hex) {
+  const normalized = String(hex || "#ffffff").replace("#", "");
+  if (normalized.length < 6) return 1;
+  const r = parseInt(normalized.slice(0, 2), 16) / 255;
+  const g = parseInt(normalized.slice(2, 4), 16) / 255;
+  const b = parseInt(normalized.slice(4, 6), 16) / 255;
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
 function getLabelIndexes(length) {
